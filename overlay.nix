@@ -5,11 +5,22 @@ final: prev: {
 
   gst_all_1 = let
     version = "1.20.5";
-    src = prev.fetchFromGitHub {
-      owner = "Xilinx";
-      repo = "gstreamer";
-      rev = "xlnx-rebase-v1.20.5_2023.1";
-      hash = "sha256-M1P44WWLY/a2SWXVXgNfk55EofGRi8BzCLXjDG4mh/w=";
+    src = prev.applyPatches {
+      src = prev.fetchFromGitHub {
+        owner = "Xilinx";
+        repo = "gstreamer";
+        rev = "xlnx-rebase-v1.20.5_2023.1";
+        hash = "sha256-M1P44WWLY/a2SWXVXgNfk55EofGRi8BzCLXjDG4mh/w=";
+      };
+      patches = [
+        # Many pipelines fail to launch with this commit, e.g. videotestsrc ! kmssink
+        # fa44de079c: good, de00c69ba7: bad
+        (prev.fetchpatch {
+          url = "https://github.com/Xilinx/gstreamer/commit/de00c69ba7f3e20e4db68d63a74d3090c4c77d45.patch";
+          revert = true;
+          hash = "sha256-wosCQwJMVC89Hbo68MKMj/2VGLDaYRbxUobvHCb/ROw=";
+        })
+      ];
     };
     prev' = prev.gst_all_1;
   in prev' // {
