@@ -1,9 +1,13 @@
 final: prev: {
 
-  libomxil-xlnx = final.callPackage ./libomxil-xlnx.nix { };
-  libvcu-xlnx = final.callPackage ./libvcu-xlnx.nix { };
+  ubootXlnx = prev.callPackage ./u-boot-xlnx.nix { };
+  linux_xlnx = prev.callPackage ./linux-xlnx.nix { kernelPatches = [ ]; };
+  linuxPackages_xlnx = prev.packagesFor final.linux_xlnx;
 
-  gst_all_1 = let
+  libomxil-xlnx = prev.callPackage ./libomxil-xlnx.nix { };
+  libvcu-xlnx = prev.callPackage ./libvcu-xlnx.nix { };
+
+  gst_all_1-xlnx = let
     version = "1.20.5";
     src = prev.applyPatches {
       src = prev.fetchFromGitHub {
@@ -38,8 +42,7 @@ final: prev: {
         "-Damfcodec=disabled" "-Ddirectshow=disabled" "-Dqsv=disabled"
       ])) super.mesonFlags ++ [ "-Dmediasrcbin=disabled" ];
     });
-    gst-omx-zynqultrascaleplus = (final.callPackage ./gst-omx.nix { omxTarget = "zynqultrascaleplus"; }).overrideAttrs (super: {
-      # inherit version; src = "${src}/subprojects/gst-omx";
+    gst-omx-zynqultrascaleplus = (prev.callPackage ./gst-omx.nix { omxTarget = "zynqultrascaleplus"; }).overrideAttrs (super: {
       mesonFlags = super.mesonFlags ++ [ (prev.lib.mesonOption "header_path" "${final.libomxil-xlnx}/include/vcu-omx-il") ];
       postPatch = super.postPatch + ''
         substituteInPlace config/zynqultrascaleplus/gstomx.conf --replace "/usr" "${final.libomxil-xlnx}"
