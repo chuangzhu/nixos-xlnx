@@ -7,6 +7,15 @@ final: prev: {
   libomxil-xlnx = prev.callPackage ./libomxil-xlnx.nix { };
   libvcu-xlnx = prev.callPackage ./libvcu-xlnx.nix { };
 
+  gst_all_1 = prev.gst_all_1 // {
+    gst-omx-zynqultrascaleplus = (prev.callPackage ./gst-omx.nix { omxTarget = "zynqultrascaleplus"; }).overrideAttrs (super: {
+      mesonFlags = super.mesonFlags ++ [ (prev.lib.mesonOption "header_path" "${final.libomxil-xlnx}/include/vcu-omx-il") ];
+      postPatch = super.postPatch + ''
+        substituteInPlace config/zynqultrascaleplus/gstomx.conf --replace "/usr" "${final.libomxil-xlnx}"
+      '';
+    });
+  };
+
   gst_all_1-xlnx = let
     version = "1.20.5";
     src = prev.applyPatches {
@@ -42,7 +51,13 @@ final: prev: {
         "-Damfcodec=disabled" "-Ddirectshow=disabled" "-Dqsv=disabled"
       ])) super.mesonFlags ++ [ "-Dmediasrcbin=disabled" ];
     });
-    gst-omx-zynqultrascaleplus = (prev.callPackage ./gst-omx.nix { omxTarget = "zynqultrascaleplus"; }).overrideAttrs (super: {
+    gst-omx-zynqultrascaleplus = (prev.callPackage ./gst-omx.nix { omxTarget = "zynqultrascaleplus"; }).overrideAttrs (super: rec {
+      inherit version; src = "${src}/subprojects/gst-omx";
+      # inherit version;
+      # src = prev.fetchurl {
+      #   url = "https://gstreamer.freedesktop.org/src/${super.pname}/${super.pname}-${version}.tar.xz";
+      #   hash = "sha256-vMy8AlSM3BI/1JlE3USk8a3F0QfjbwENMg61JuIQeAY=";
+      # };
       mesonFlags = super.mesonFlags ++ [ (prev.lib.mesonOption "header_path" "${final.libomxil-xlnx}/include/vcu-omx-il") ];
       postPatch = super.postPatch + ''
         substituteInPlace config/zynqultrascaleplus/gstomx.conf --replace "/usr" "${final.libomxil-xlnx}"
