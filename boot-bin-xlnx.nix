@@ -5,28 +5,27 @@
 , stdenv
 , armTrustedFirmwareXlnx
 , ubootXlnx
-, fsbl ? null
-, pmufw ? null
+, bitstream ? null # system.bit
+, fsbl ? null # zynqmp_fsbl.elf
+, pmufw ? null # pmufw.elf
 }:
 
-# assert fsbl != null;
-# assert pmufw != null;
-
 stdenv.mkDerivation {
-  name = "BOOT.bin";
+  name = "BOOT.BIN";
   dontUnpack = true;
 
   nativeBuildInputs = [ xilinx-bootgen ];
+  # [destination_cpu=a53-0, load=0x00100000] /mnt/xlnx/images/linux/system.dtb
   buildPhase = ''
+    mkdir $out/
     bootgen -image ${writeText "bootgen.bif" ''
       the_ROM_image: {
-        [bootloader, destination_cpu=a53-0] /mnt/xlnx/images/linux/zynqmp_fsbl.elf
-        [pmufw_image] /mnt/xlnx/images/linux/pmufw.elf
-        [destination_device=pl] /mnt/xlnx/project-spec/hw-description/exdes_wrapper.bit
+        [bootloader, destination_cpu=a53-0] ${fsbl}
+        [pmufw_image] ${pmufw}
+        [destination_device=pl] ${bitstream}
         [destination_cpu=a53-0, exception_level=el-3, trustzone] ${armTrustedFirmwareXlnx}/bl31.elf
-        [destination_cpu=a53-0, load=0x00100000] /mnt/xlnx/images/linux/system.dtb
         [destination_cpu=a53-0, exception_level=el-2] ${ubootXlnx}/u-boot.elf
       }
-    ''} -arch zynqmp -w -o $out/BOOT.bin
+    ''} -arch zynqmp -w -o $out/BOOT.BIN
   '';
 }

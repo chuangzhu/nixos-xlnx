@@ -1,8 +1,10 @@
 final: prev: {
 
   ubootXlnx = prev.callPackage ./u-boot-xlnx.nix { };
+  armTrustedFirmwareXlnx = prev.callPackage ./arm-trusted-firmware-xlnx.nix { };
+  boot-bin-xlnx = prev.callPackage ./boot-bin-xlnx.nix { };
   linux_xlnx = prev.callPackage ./linux-xlnx.nix { kernelPatches = [ ]; };
-  linuxPackages_xlnx = prev.packagesFor final.linux_xlnx;
+  linuxPackages_xlnx = prev.linuxKernel.packagesFor final.linux_xlnx;
 
   libomxil-xlnx = prev.callPackage ./libomxil-xlnx.nix { };
   libvcu-xlnx = prev.callPackage ./libvcu-xlnx.nix { };

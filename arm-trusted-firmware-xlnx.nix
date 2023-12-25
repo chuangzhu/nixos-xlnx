@@ -1,5 +1,6 @@
 { lib
 , buildArmTrustedFirmware
+, unfreeIncludeHDCPBlob ? true
 }:
 
 buildArmTrustedFirmware rec {
@@ -7,5 +8,5 @@ buildArmTrustedFirmware rec {
   platform = "zynqmp";
   extraMeta.platforms = [ "aarch64-linux" ];
   filesToInstall = [ "build/${platform}/release/bl31/bl31.elf"];
-  platformCanUseHDCPBlob = true;
+  platformCanUseHDCPBlob = unfreeIncludeHDCPBlob;
 }
