@@ -1,11 +1,13 @@
 final: prev: {
 
-  embeddedsw-xlnx = prev.callPackage ./embeddedsw.nix { };
+  xlnx-embeddedsw = prev.callPackage ./embeddedsw.nix { };
   ubootXlnx = prev.callPackage ./u-boot-xlnx.nix { };
   armTrustedFirmwareXlnx = prev.callPackage ./arm-trusted-firmware-xlnx.nix { };
   boot-bin-xlnx = prev.callPackage ./boot-bin-xlnx.nix { };
   linux_xlnx = prev.callPackage ./linux-xlnx.nix { kernelPatches = [ ]; };
   linuxPackages_xlnx = prev.linuxKernel.packagesFor final.linux_xlnx;
+  xlnx-hdmi-modules = final.linuxPackages_xlnx.callPackage ./hdmi-modules.nix { };
+  xlnx-dp-modules = final.linuxPackages_xlnx.callPackage ./dp-modules.nix { };
 
   libomxil-xlnx = prev.callPackage ./libomxil-xlnx.nix { };
   libvcu-xlnx = prev.callPackage ./libvcu-xlnx.nix { };
