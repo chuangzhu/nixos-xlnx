@@ -20,8 +20,5 @@ buildUBoot {
   defconfig = "xilinx_zynqmp_virt_defconfig";
   extraMeta.platforms = [ "aarch64-linux" ];
 
-  filesToInstall = [ "boot.scr" "u-boot.elf" ];
-  postBuild = ''
-    ./tools/mkimage -c none -A arm -T script -d ${./boot.cmd} boot.scr
-  '';
+  filesToInstall = [ "u-boot.elf" ];
 }

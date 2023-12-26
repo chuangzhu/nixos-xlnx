@@ -11,7 +11,7 @@ stdenv.mkDerivation (finalAttrs: {
     owner = "Xilinx";
     repo = "embeddedsw";
     rev = "xilinx_v${finalAttrs.version}";
-    #hash = "";
+    hash = "sha256-UDz9KK/Hw3qM1BAeKif30rE8Bi6C2uvuZlvyvtJCMfw=";
   };
 
   meta = {
