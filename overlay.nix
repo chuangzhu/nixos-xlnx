@@ -1,5 +1,6 @@
 final: prev: {
 
+  embeddedsw-xlnx = prev.callPackage ./embeddedsw.nix;
   ubootXlnx = prev.callPackage ./u-boot-xlnx.nix { };
   armTrustedFirmwareXlnx = prev.callPackage ./arm-trusted-firmware-xlnx.nix { };
   boot-bin-xlnx = prev.callPackage ./boot-bin-xlnx.nix { };

@@ -17,7 +17,7 @@ buildUBoot {
     hash = "sha256-k8Uu9/X95L7r6OfrK7mo4ogTa872yeK7a+by/ryZc4I=";
   };
 
-  defconfig = "xilinx_zynqmp_mini_defconfig";
+  defconfig = "xilinx_zynqmp_virt_defconfig";
   extraMeta.platforms = [ "aarch64-linux" ];
 
   filesToInstall = [ "boot.scr" "u-boot.elf" ];
