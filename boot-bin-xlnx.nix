@@ -7,7 +7,7 @@
 , armTrustedFirmwareXlnx
 , ubootXlnx
 , bitstream ? null # system.bit
-, fsbl ? null # zynqmp_fsbl.elf
+, fsbl ? null # fsbl_a53.elf
 , pmufw ? null # pmufw.elf
 , dtb ? null # system.dtb
 }:
