@@ -35,6 +35,7 @@ stdenv.mkDerivation rec {
     description = "OpenMAX Integration Layer implementation for Xilinx Zynq UltraScale+ VCU";
     homepage = "https://xilinx-wiki.atlassian.net/wiki/spaces/A/pages/18842546/Xilinx+Zynq+UltraScale+MPSoC+Video+Codec+Unit";
     license = licenses.unfree; # Based on X11 license, but with two extra terms
+    sourceProvenance = with sourceTypes; [ fromSource ];
     platforms = platforms.linux;
     maintainers = with maintainers; [ chuangzhu ];
   };

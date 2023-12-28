@@ -1,6 +1,7 @@
 final: prev: {
 
-  xlnx-embeddedsw = prev.callPackage ./embeddedsw.nix { };
+  inherit (prev.callPackages ./embeddedsw.nix { })
+    zynqmp-fsbl zynqmp-pmufw;
   ubootXlnx = prev.callPackage ./u-boot-xlnx.nix { };
   armTrustedFirmwareXlnx = prev.callPackage ./arm-trusted-firmware-xlnx.nix { };
   boot-bin-xlnx = prev.callPackage ./boot-bin-xlnx.nix { };
@@ -8,6 +9,8 @@ final: prev: {
   linuxPackages_xlnx = prev.linuxKernel.packagesFor final.linux_xlnx;
   xlnx-hdmi-modules = final.linuxPackages_xlnx.callPackage ./hdmi-modules.nix { };
   xlnx-dp-modules = final.linuxPackages_xlnx.callPackage ./dp-modules.nix { };
+
+  libmali-xlnx = prev.callPackages ./libmali-xlnx.nix { };
 
   libomxil-xlnx = prev.callPackage ./libomxil-xlnx.nix { };
   libvcu-xlnx = prev.callPackage ./libvcu-xlnx.nix { };
