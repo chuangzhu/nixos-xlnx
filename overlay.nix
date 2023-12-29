@@ -9,9 +9,9 @@ final: prev: {
   linuxPackages_xlnx = prev.linuxKernel.packagesFor final.linux_xlnx;
   xlnx-hdmi-modules = final.linuxPackages_xlnx.callPackage ./hdmi-modules.nix { };
   xlnx-dp-modules = final.linuxPackages_xlnx.callPackage ./dp-modules.nix { };
+  mali-module-xlnx = final.linuxPackages_xlnx.callPackage ./mali-module-xlnx.nix { };
 
   libmali-xlnx = prev.callPackages ./libmali-xlnx.nix { };
-
   libomxil-xlnx = prev.callPackage ./libomxil-xlnx.nix { };
   libvcu-xlnx = prev.callPackage ./libvcu-xlnx.nix { };
 
