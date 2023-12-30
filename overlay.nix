@@ -15,6 +15,10 @@ final: prev: {
   libomxil-xlnx = prev.callPackage ./libomxil-xlnx.nix { };
   libvcu-xlnx = prev.callPackage ./libvcu-xlnx.nix { };
 
+  xorg = prev.xorg // {
+    xf86videoarmsoc = prev.callPackage ./xf86-video-armsoc.nix { };
+  };
+
   gst_all_1 = prev.gst_all_1 // {
     gst-omx-zynqultrascaleplus = (prev.callPackage ./gst-omx.nix { omxTarget = "zynqultrascaleplus"; }).overrideAttrs (super: {
       mesonFlags = super.mesonFlags ++ [ (prev.lib.mesonOption "header_path" "${final.libomxil-xlnx}/include/vcu-omx-il") ];
