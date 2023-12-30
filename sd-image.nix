@@ -1,12 +1,5 @@
 { config, pkgs, lib, modulesPath, ... }:
 
-let
-  boot-bin = pkgs.boot-bin-xlnx.override {
-    inherit (config.hardware.zynq) bitstream fsbl pmufw;
-    dtb = "${config.hardware.deviceTree.package}/system.dtb";
-  };
-in
-
 {
   options.hardware.zynq = {
     bitstream = lib.mkOption {
@@ -36,6 +29,17 @@ in
         Can be semi-automated using {command}`./vitisgenfw.tcl <vivado_exported.xsa>`
       '';
     };
+    boot-bin = lib.mkOption {
+      type = lib.types.path;
+      default = pkgs.boot-bin-xlnx.override {
+        inherit (config.hardware.zynq) bitstream fsbl pmufw;
+        dtb = "${config.hardware.deviceTree.package}/system.dtb";
+      };
+      description = lib.mdDoc ''
+        You can build BOOT.BIN without building the whole system using
+        {command}`nix build .#nixosConfigurations.<hostname>.config.hardware.zynq.boot-bin`
+      '';
+    };
   };
 
   imports = [
@@ -50,7 +54,7 @@ in
       # Depending on the FSBL setup, BOOT.BIN can be quite large
       firmwareSize = 100;
       populateFirmwareCommands = ''
-        cp ${boot-bin}/BOOT.BIN firmware/
+        cp ${config.hardware.zynq.boot-bin}/BOOT.BIN firmware/
       '';
       populateRootCommands = ''
         mkdir -p ./files/boot
@@ -63,7 +67,7 @@ in
         name = "xlnx-firmware-update";
         text = ''
           systemctl start boot-firmware.mount
-          cp ${boot-bin}/BOOT.BIN /boot/firmware/
+          cp ${config.hardware.zynq.boot-bin}/BOOT.BIN /boot/firmware/
         '';
       })
     ];
