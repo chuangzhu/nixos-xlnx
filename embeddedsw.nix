@@ -1,6 +1,10 @@
 { lib
 , stdenv
 , fetchFromGitHub
+, baseConfig ? "zcu102" # Can be "zcu102", "zcu102-es2", or "som"
+, psu_init_c ? null
+, psu_init_h ? null
+, xparameters_h ? null
 }:
 
 let
@@ -51,12 +55,20 @@ in
 
     postPatch = ''
       patchShebangs lib/sw_apps/zynqmp_fsbl/misc/copy_bsp.sh
+      rm lib/sw_apps/zynqmp_fsbl/misc/${baseConfig}/psu_init_gpl.{c,h}
+    '' + lib.optionalString (psu_init_c != null) ''
+      cp ${psu_init_c} lib/sw_apps/zynqmp_fsbl/misc/${baseConfig}/psu_init.c
+    '' + lib.optionalString (psu_init_h != null) ''
+      cp ${psu_init_h} lib/sw_apps/zynqmp_fsbl/misc/${baseConfig}/psu_init.h
+    '' + lib.optionalString (xparameters_h != null) ''
+      cp ${xparameters_h} lib/sw_apps/zynqmp_fsbl/misc/${baseConfig}/a53/xparameters.h
     '';
     makeFlags = [
       "-C" "lib/sw_apps/zynqmp_fsbl/src"
       "CC:=$(CC)" "COMPILER=$(CC)"
       "AR:=$(AR)" "ARCHIVER=$(AR)"
       "CROSS_COMP=${stdenv.targetPlatform.config}"
+      "BOARD=${baseConfig}"
     ];
 
     installPhase = ''
@@ -70,6 +82,7 @@ in
       description = "Zynq MPSoC First Stage Boot Loader";
       homepage = "https://xilinx-wiki.atlassian.net/wiki/spaces/A/pages/18842019/FSBL";
       license = licenses.mit;
+      # It does also support running on the Cortex-R5 core, but I haven't tried that yet
       platforms = [ "aarch64-none" ];
       maintainer = with maintainers; [ chuangzhu ];
     };
