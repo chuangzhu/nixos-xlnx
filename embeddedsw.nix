@@ -1,10 +1,9 @@
 { lib
 , stdenv
 , fetchFromGitHub
-, baseConfig ? "zcu102" # Can be "zcu102", "zcu102-es2", or "som"
+, bspDir ? null
 , psu_init_c ? null
 , psu_init_h ? null
-, xparameters_h ? null
 }:
 
 let
@@ -55,21 +54,17 @@ in
 
     postPatch = ''
       patchShebangs lib/sw_apps/zynqmp_fsbl/misc/copy_bsp.sh
-      rm lib/sw_apps/zynqmp_fsbl/misc/${baseConfig}/psu_init_gpl.{c,h}
     '' + lib.optionalString (psu_init_c != null) ''
-      cp ${psu_init_c} lib/sw_apps/zynqmp_fsbl/misc/${baseConfig}/psu_init.c
+      cp ${psu_init_c} lib/sw_apps/zynqmp_fsbl/misc/zcu102/psu_init.c
     '' + lib.optionalString (psu_init_h != null) ''
-      cp ${psu_init_h} lib/sw_apps/zynqmp_fsbl/misc/${baseConfig}/psu_init.h
-    '' + lib.optionalString (xparameters_h != null) ''
-      cp ${xparameters_h} lib/sw_apps/zynqmp_fsbl/misc/${baseConfig}/a53/xparameters.h
+      cp ${psu_init_h} lib/sw_apps/zynqmp_fsbl/misc/zcu102/psu_init.h
     '';
     makeFlags = [
       "-C" "lib/sw_apps/zynqmp_fsbl/src"
       "CC:=$(CC)" "COMPILER=$(CC)"
       "AR:=$(AR)" "ARCHIVER=$(AR)"
       "CROSS_COMP=${stdenv.targetPlatform.config}"
-      "BOARD=${baseConfig}"
-    ];
+    ] ++ lib.optional (bspDir != null) "BSP_DIR=${bspDir}";
 
     installPhase = ''
       runHook preInstall
