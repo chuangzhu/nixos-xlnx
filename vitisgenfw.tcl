@@ -34,23 +34,40 @@ if {![file exists ~/.cache/device-tree-xlnx]} {
 	error "Clone https://github.com/Xilinx/device-tree-xlnx/ to ~/.cache/device-tree-xlnx!"
 }
 
-setws [tmpdir]
+if {![info exists env(GENFW_TARGET)]} {
 
-createdts -hw $xsa -platform-name devicetree -local-repo ~/.cache/device-tree-xlnx
-file copy -force [file join [getws] devicetree hw $xsabase.bit] $outdir/system.bit
+	set env(GENFW_TARGET) "devicetree"
+	exec xsct $argv0 $xsa $outdir >@stdout 2>@stderr
+	set env(GENFW_TARGET) "fsbl"
+	exec xsct $argv0 $xsa $outdir >@stdout 2>@stderr
 
-set bspdir [file join [getws] devicetree psu_cortexa53_0 device_tree_domain bsp]
-exec aarch64-linux-gnu-cpp -nostdinc -undef -x assembler-with-cpp $bspdir/system-top.dts -o $bspdir/system.dts
-exec -ignorestderr dtc -@ -I dts -O dtb $bspdir/system.dts -o $bspdir/system.dtb
-foreach dt {pcw.dtsi pl.dtsi zynqmp.dtsi system-top.dts system.dtb} {
-	file copy -force $bspdir/$dt $outdir
+} elseif {$env(GENFW_TARGET) == "devicetree"} {
+
+	setws [tmpdir]
+
+	createdts -hw $xsa -platform-name devicetree -local-repo ~/.cache/device-tree-xlnx
+	file copy -force [file join [getws] devicetree hw $xsabase.bit] $outdir/system.bit
+
+	set bspdir [file join [getws] devicetree psu_cortexa53_0 device_tree_domain bsp]
+	exec aarch64-linux-gnu-cpp -nostdinc -undef -x assembler-with-cpp $bspdir/system-top.dts -o $bspdir/system.dts
+	exec -ignorestderr dtc -@ -I dts -O dtb $bspdir/system.dts -o $bspdir/system.dtb
+	foreach dt {pcw.dtsi pl.dtsi zynqmp.dtsi zynqmp-clk-ccf.dtsi system-top.dts system.dtb} {
+		file copy -force $bspdir/$dt $outdir
+	}
+
+	file delete -force [getws]
+
+} elseif {$env(GENFW_TARGET) == "fsbl"} {
+
+	setws [tmpdir]
+
+	app create -name fsbl -hw $xsa -os standalone -proc psu_cortexa53_0 -template {Zynq MP FSBL}
+	# app create -name pmufw -hw $xsa -os standalone -proc psu_pmu_0 -template {ZynqMP PMU Firmware}
+	app config -name fsbl define-compiler-symbols {FSBL_DEBUG_INFO}
+	app build -name fsbl
+	file copy -force [file join [getws] $xsabase zynqmp_fsbl fsbl_a53.elf] $outdir
+	file copy -force [file join [getws] $xsabase zynqmp_pmufw pmufw.elf] $outdir
+
+	file delete -force [getws]
+
 }
-
-app create -name fsbl -hw $xsa -os standalone -proc psu_cortexa53_0 -template {Zynq MP FSBL}
-# app create -name pmufw -hw $xsa -os standalone -proc psu_pmu_0 -template {ZynqMP PMU Firmware}
-app config -name fsbl define-compiler-symbols {FSBL_DEBUG_INFO}
-app build -name fsbl
-file copy -force [file join [getws] $xsabase zynqmp_fsbl fsbl_a53.elf] $outdir
-file copy -force [file join [getws] $xsabase zynqmp_pmufw pmufw.elf] $outdir
-
-file delete -force [getws]
