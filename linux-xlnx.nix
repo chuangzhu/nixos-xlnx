@@ -38,5 +38,5 @@ buildLinux (args // {
     '';
   } ++ kernelPatches;
 
-  extraMeta.platforms = [ "aarch64-linux" ];
+  extraMeta.platforms = [ "aarch64-linux" "armv7l-linux" ];
 } // (args.argsOverride or { }))

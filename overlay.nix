@@ -2,9 +2,11 @@ final: prev: {
 
   inherit (prev.callPackages ./embeddedsw.nix { })
     zynqmp-fsbl zynqmp-pmufw;
-  ubootXlnx = prev.callPackage ./u-boot-xlnx.nix { };
-  armTrustedFirmwareXlnx = prev.callPackage ./arm-trusted-firmware-xlnx.nix { };
-  boot-bin-xlnx = prev.callPackage ./boot-bin-xlnx.nix { };
+  ubootZynqMP = prev.callPackage ./u-boot-xlnx.nix { platform = "zynqmp"; };
+  ubootZynq = prev.callPackage ./u-boot-xlnx.nix { platform = "zynq"; };
+  armTrustedFirmwareZynqMP = prev.callPackage ./arm-trusted-firmware-xlnx.nix { };
+  boot-bin-zynqmp = prev.callPackage ./boot-bin-zynqmp.nix { };
+  boot-bin-zynq = prev.callPackage ./boot-bin-zynq.nix { };
   linux_xlnx = prev.callPackage ./linux-xlnx.nix { kernelPatches = [ ]; };
   linuxPackages_xlnx = prev.linuxKernel.packagesFor final.linux_xlnx;
   xlnx-hdmi-modules = final.linuxPackages_xlnx.callPackage ./hdmi-modules.nix { };
