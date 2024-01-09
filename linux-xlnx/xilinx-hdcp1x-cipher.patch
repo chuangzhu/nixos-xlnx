@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note
+diff --git a/include/linux/xilinx-hdcp1x-cipher.h b/include/linux/xilinx-hdcp1x-cipher.h
+index a1d59e1f3b44..43767b318911 100644
+--- a/include/linux/xilinx-hdcp1x-cipher.h
++++ b/include/linux/xilinx-hdcp1x-cipher.h
+@@ -10,6 +10,7 @@
+ #ifndef __XILINX_HDCP1X_CIPHER_H__
+ #define __XILINX_HDCP1X_CIPHER_H__
+ 
++#include <linux/bitfield.h>
+ #include <linux/device.h>
+ #include <linux/io.h>
+ #include <linux/types.h>

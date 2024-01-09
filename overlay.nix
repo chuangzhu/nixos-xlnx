@@ -5,10 +5,10 @@ final: prev: {
   ubootZynqMP = prev.callPackage ./u-boot-xlnx.nix { platform = "zynqmp"; };
   ubootZynq = prev.callPackage ./u-boot-xlnx.nix { platform = "zynq"; };
   armTrustedFirmwareZynqMP = prev.callPackage ./arm-trusted-firmware-xlnx.nix { };
-  boot-bin-zynqmp = prev.callPackage ./boot-bin.nix { };
-  boot-bin-zynq = prev.callPackage ./boot-bin.nix { };
-  linux_zynqmp = prev.callPackage ./linux-xlnx.nix { defconfig = "xilinx_defconfig"; kernelPatches = [ ]; };
-  linux_zynq = prev.callPackage ./linux-xlnx.nix { defconfig = "xilinx_zynq_defconfig"; kernelPatches = [ ]; };
+  boot-bin-zynqmp = prev.callPackage ./boot-bin.nix { platform = "zynqmp"; };
+  boot-bin-zynq = prev.callPackage ./boot-bin.nix { platform = "zynq"; };
+  linux_zynqmp = prev.callPackage ./linux-xlnx { defconfig = "xilinx_defconfig"; kernelPatches = [ ]; };
+  linux_zynq = prev.callPackage ./linux-xlnx { defconfig = "xilinx_zynq_defconfig"; kernelPatches = [ ]; };
   linuxPackages_zynqmp = (prev.linuxKernel.packagesFor final.linux_zynqmp).extend final.xlnxExtraLinuxPackages;
   linuxPackages_zynq = (prev.linuxKernel.packagesFor final.linux_zynq).extend final.xlnxExtraLinuxPackages;
 
