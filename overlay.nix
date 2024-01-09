@@ -5,21 +5,17 @@ final: prev: {
   ubootZynqMP = prev.callPackage ./u-boot-xlnx.nix { platform = "zynqmp"; };
   ubootZynq = prev.callPackage ./u-boot-xlnx.nix { platform = "zynq"; };
   armTrustedFirmwareZynqMP = prev.callPackage ./arm-trusted-firmware-xlnx.nix { };
-  boot-bin-zynqmp = prev.callPackage ./boot-bin-zynqmp.nix { };
-  boot-bin-zynq = prev.callPackage ./boot-bin-zynq.nix { };
+  boot-bin-zynqmp = prev.callPackage ./boot-bin.nix { };
+  boot-bin-zynq = prev.callPackage ./boot-bin.nix { };
   linux_zynqmp = prev.callPackage ./linux-xlnx.nix { defconfig = "xilinx_defconfig"; kernelPatches = [ ]; };
   linux_zynq = prev.callPackage ./linux-xlnx.nix { defconfig = "xilinx_zynq_defconfig"; kernelPatches = [ ]; };
-  linuxPackages_zynqmp = final.linuxKernel.packagesFor final.linux_zynqmp;
-  linuxPackages_zynq = final.linuxKernel.packagesFor final.linux_zynq;
+  linuxPackages_zynqmp = (prev.linuxKernel.packagesFor final.linux_zynqmp).extend final.xlnxExtraLinuxPackages;
+  linuxPackages_zynq = (prev.linuxKernel.packagesFor final.linux_zynq).extend final.xlnxExtraLinuxPackages;
 
-  linuxKernel = prev.linuxKernel // {
-    packagesFor = kernel:
-      let origin = prev.linuxKernel.packagesFor kernel; in
-      origin // {
-        xlnx-hdmi-modules = origin.callPackage ./hdmi-modules.nix { };
-        xlnx-dp-modules = origin.callPackage ./dp-modules.nix { };
-        mali-module-xlnx = origin.callPackage ./mali-module-xlnx.nix { };
-      };
+  xlnxExtraLinuxPackages= lfinal: lprev: {
+    xlnx-hdmi-modules = lprev.callPackage ./hdmi-modules.nix { };
+    xlnx-dp-modules = lprev.callPackage ./dp-modules.nix { };
+    mali-module-xlnx = lprev.callPackage ./mali-module-xlnx.nix { };
   };
 
   libmali-xlnx = prev.callPackages ./libmali-xlnx.nix { };
@@ -88,4 +84,13 @@ final: prev: {
     });
   };
 
+  xilinx-bootgen_2022_2 = prev.xilinx-bootgen.overrideAttrs rec {
+    version = "xilinx_v2022.2";
+    src = prev.fetchFromGitHub {
+      owner = "Xilinx";
+      repo = "bootgen";
+      rev = version;
+      hash = "sha256-bnvF0rRWvMuqeLjXfEQ9uaS1x/3iE/jLM3yoiBN0xbU=";
+    };
+  };
 }
