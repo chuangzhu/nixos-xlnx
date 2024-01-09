@@ -22,7 +22,7 @@ source /installation/path/to/Vitis/2022.2/settings64.sh
 xsct ./vitisgenfw.tcl vivado_exported.xsa ./output/directory/ -platform zynqmp  # Or "zynq" for Zynq 7000
 ```
 
-Assume you have Nix flakes enabled, configure NixOS as follows:
+Assuming you have Nix flakes enabled, configure NixOS as follows:
 
 ```nix
 {
@@ -152,3 +152,5 @@ systemd.services.i3 = {
 ## Disclaimer
 
 Zynq, ZynqMP, Zynq UltraScale+ MPSoC, Vivado, Vitis, PetaLinux are trademarks of Xilinx, Inc. This project is not endorsed by nor affiliated with Xilinx, Inc.
+
+MIT license only applies to the files in this repository, not to the packages built with it. Licenses for patches in this repository are otherwise specified.

@@ -1,7 +1,7 @@
 { lib
 , fetchFromGitHub
 , buildArmTrustedFirmware
-, unfreeIncludeHDCPBlob ? true
+, unfreeIncludeHDCPBlob ? false
 }:
 
 buildArmTrustedFirmware rec {

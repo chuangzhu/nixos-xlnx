@@ -2,8 +2,6 @@
 , fetchFromGitHub
 , buildArmTrustedFirmware
 , buildUBoot
-, writeText
-, xilinx-bootgen
 , stdenv
 , platform ? "zynqmp"
 }:
