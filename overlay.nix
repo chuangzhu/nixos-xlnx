@@ -7,11 +7,20 @@ final: prev: {
   armTrustedFirmwareZynqMP = prev.callPackage ./arm-trusted-firmware-xlnx.nix { };
   boot-bin-zynqmp = prev.callPackage ./boot-bin-zynqmp.nix { };
   boot-bin-zynq = prev.callPackage ./boot-bin-zynq.nix { };
-  linux_xlnx = prev.callPackage ./linux-xlnx.nix { kernelPatches = [ ]; };
-  linuxPackages_xlnx = prev.linuxKernel.packagesFor final.linux_xlnx;
-  xlnx-hdmi-modules = final.linuxPackages_xlnx.callPackage ./hdmi-modules.nix { };
-  xlnx-dp-modules = final.linuxPackages_xlnx.callPackage ./dp-modules.nix { };
-  mali-module-xlnx = final.linuxPackages_xlnx.callPackage ./mali-module-xlnx.nix { };
+  linux_zynqmp = prev.callPackage ./linux-xlnx.nix { defconfig = "xilinx_defconfig"; kernelPatches = [ ]; };
+  linux_zynq = prev.callPackage ./linux-xlnx.nix { defconfig = "xilinx_zynq_defconfig"; kernelPatches = [ ]; };
+  linuxPackages_zynqmp = final.linuxKernel.packagesFor final.linux_zynqmp;
+  linuxPackages_zynq = final.linuxKernel.packagesFor final.linux_zynq;
+
+  linuxKernel = prev.linuxKernel // {
+    packagesFor = kernel:
+      let origin = prev.linuxKernel.packagesFor kernel; in
+      origin // {
+        xlnx-hdmi-modules = origin.callPackage ./hdmi-modules.nix { };
+        xlnx-dp-modules = origin.callPackage ./dp-modules.nix { };
+        mali-module-xlnx = origin.callPackage ./mali-module-xlnx.nix { };
+      };
+  };
 
   libmali-xlnx = prev.callPackages ./libmali-xlnx.nix { };
   libomxil-xlnx = prev.callPackage ./libomxil-xlnx.nix { };

@@ -2,6 +2,12 @@
 
 {
   options.hardware.zynq = {
+    platform = lib.mkOption {
+      type = lib.types.enum [ "zynq" "zynqmp" ];
+      description = lib.mdDoc ''
+        Whether you use Zynq 7000 or Zynq UltraScale+ MPSoC.
+      '';
+    };
     dtb = lib.mkOption {
       type = lib.types.path;
       example = lib.literalExpression "./firmware/system.dtb";
@@ -25,7 +31,7 @@
 
     nixpkgs.overlays = [ (import ./overlay.nix) ];
 
-    boot.kernelPackages = lib.mkDefault pkgs.linuxPackages_xlnx;
+    boot.kernelPackages = lib.mkDefault pkgs."linuxPackages_${config.hardware.zynq.platform}";
 
     boot.kernelParams = lib.mkDefault [ "earlycon" "console=ttyPS0,115200n8" ];
 

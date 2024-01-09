@@ -2,13 +2,14 @@
 , buildLinux
 , fetchFromGitHub
 , writeText
+, defconfig ? "xilinx_defconfig"
 , kernelPatches ? [ ]
 , ...
 } @ args:
 
 buildLinux (args // {
   version = "5.15.36-xilinx-v2022.2";
-  modDirVersion = "5.15.0";
+  modDirVersion = if defconfig == "xilinx_zynq_defconfig" then "5.15.0-xilinx" else "5.15.0";
 
   src = fetchFromGitHub {
     owner = "Xilinx";
@@ -17,7 +18,6 @@ buildLinux (args // {
     hash = "sha256-8iPAKyK+jPkjl1TWn+IbiHN9iRyuWFivp/MeCEsNVlM=";
   };
 
-  defconfig = "xilinx_defconfig";
   structuredExtraConfig = with lib.kernel; {
     DEBUG_INFO_BTF = lib.mkForce no;
   };

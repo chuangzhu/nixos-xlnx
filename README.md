@@ -99,7 +99,7 @@ The Mali GPU built in ZynqMP isn't supported by Mesa yet. You have to use the cl
 
 ```nix
 hardware.opengl.extraPackages = [ pkgs.libmali-xlnx.x11 ]; # Possible choices: wayland, x11, fbdev, headless
-boot.extraModulePackages = [ pkgs.mali-module-xlnx ];
+boot.extraModulePackages = [ config.boot.kernelPackages.mali-module-xlnx ];
 boot.blacklistedKernelModules = [ "lima" ];
 boot.initrd.kernelModules = [ "mali" ];
 ```

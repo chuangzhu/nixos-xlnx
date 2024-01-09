@@ -2,12 +2,6 @@
 
 {
   options.hardware.zynq = {
-    platform = lib.mkOption {
-      type = lib.types.enum [ "zynq" "zynqmp" ];
-      description = lib.mdDoc ''
-        Whether you use Zynq 7000 or Zynq UltraScale+ MPSoC.
-      '';
-    };
     bitstream = lib.mkOption {
       type = lib.types.path;
       example = lib.literalExpression "./firmware/system.bit";
