@@ -91,6 +91,38 @@ After that, you can update BOOT.BIN using
 ssh root@zynqmpboard.local xlnx-firmware-update
 ```
 
+## Notes on cross compilation
+
+* For ZynqMP, Nixpkgs provides tons of prebuilt packages for aarch64-linux native/emulated builds, so you only need to build a small amount of packages.
+  - For aarch64-linux, native/emulated builds have a higher [support Tier in Nixpkgs](https://github.com/NixOS/rfcs/blob/master/rfcs/0046-platform-support-tiers.md) than cross builds.
+  - Even if you don't have a AArch64 builder, the build time for emulated builds is still acceptable given the small amount of packages you need to build.
+* For Zynq 7000, Nixpkgs doesn't provide a binary cache for armv7l-linux.
+  - For native/emulated builds, you'll need to bootstrap from stage 0. For emulated builds, this is *really* time consuming.
+  - For armv7l-linux, cross builds and native/emulated have the same level of support Tier.
+
+### Emulated builds
+- For NixOS, add this to the *builder's* configuration.nix:
+  ```nix
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" "armv7l-linux" ];
+  ```
+- For other systemd-based Linux distros, you need to install `qemu-user-static` (something like that), edit `/etc/binfmt.d/arm.conf` as the follows:
+  ```
+  :aarch64-linux:M::\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\xb7\x00:\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\x00\xff\xfe\xff\xff\xff:/usr/bin/qemu-aarch64-static:PF
+  :armv7l-linux:M::\x7fELF\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x28\x00:\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\x00\xff\xfe\xff\xff\xff:/usr/bin/qemu-armhf-static:PF
+  ```
+  Restart `systemd-binfmt.service`. Add `extra-platforms = armv7l-linux` to your `/etc/nix/nix.conf`. Restart `nix-daemon.service`.
+
+### Cross builds
+Set `nixpkgs.hostPlatform` in the *target's* configuration to your *builder's* platform, for example:
+```nix
+nixpkgs.hostPlatform = "x86_64-linux";
+```
+
+### Native builds
+Many AArch64 CPUs also supports AArch32, which provides backward compatibility with ARMv7. Such "aarch64-linux" systems can be used to build armv7l-linux natively.
+  - Check whether your `lscpu` says `CPU op-mode(s): 32-bit, 64-bit`.
+  - Add `extra-platforms = armv7l-linux` to your `/etc/nix/nix.conf`. Restart `nix-daemon.service`.
+
 ## Known issues
 
 ### Applications that requires OpenGL not launching

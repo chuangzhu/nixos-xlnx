@@ -1,0 +1,100 @@
+# SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note
+diff --git a/drivers/clk/clk-xlnx-clock-wizard-v.c b/drivers/clk/clk-xlnx-clock-wizard-v.c
+index fdb583d824d9..f24f378de7ee 100644
+--- a/drivers/clk/clk-xlnx-clock-wizard-v.c
++++ b/drivers/clk/clk-xlnx-clock-wizard-v.c
+@@ -7,6 +7,7 @@
+  *  Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+  */
+ 
++#include <asm/div64.h>
+ #include <linux/bitfield.h>
+ #include <linux/platform_device.h>
+ #include <linux/clk.h>
+@@ -226,10 +227,10 @@ static int clk_wzrd_get_divisors(struct clk_hw *hw, unsigned long rate,
+ 
+ 	for (m = WZRD_M_MIN; m <= WZRD_M_MAX; m++) {
+ 		for (d = WZRD_D_MIN; d <= WZRD_D_MAX; d++) {
+-			vco_freq = DIV_ROUND_CLOSEST((parent_rate * m), d);
++			vco_freq = DIV_ROUND_CLOSEST_ULL((parent_rate * m), d);
+ 			if (vco_freq >= WZRD_VCO_MIN && vco_freq <= WZRD_VCO_MAX) {
+ 				for (o = WZRD_O_MIN; o <= WZRD_O_MAX; o++) {
+-					freq = DIV_ROUND_CLOSEST(vco_freq, o);
++					freq = DIV_ROUND_CLOSEST_ULL(vco_freq, o);
+ 					diff = abs(freq - rate);
+ 
+ 					if (diff < WZRD_MIN_ERR) {
+diff --git a/drivers/clk/clk-xlnx-clock-wizard.c b/drivers/clk/clk-xlnx-clock-wizard.c
+index e13f3fa0435f..87b5373bce4d 100644
+--- a/drivers/clk/clk-xlnx-clock-wizard.c
++++ b/drivers/clk/clk-xlnx-clock-wizard.c
+@@ -7,6 +7,7 @@
+  *  Sören Brinkmann <soren.brinkmann@xilinx.com>
+  */
+ 
++#include <asm/div64.h>
+ #include <linux/bitfield.h>
+ #include <linux/platform_device.h>
+ #include <linux/clk.h>
+@@ -260,10 +261,10 @@ static u64 clk_wzrd_get_divisors(struct clk_hw *hw, unsigned long rate,
+ 
+ 	for (m = WZRD_M_MIN; m <= WZRD_M_MAX; m++) {
+ 		for (d = WZRD_D_MIN; d <= WZRD_D_MAX; d++) {
+-			vco_freq = DIV_ROUND_CLOSEST((parent_rate * m), d);
++			vco_freq = DIV_ROUND_CLOSEST_ULL((parent_rate * m), d);
+ 			if (vco_freq >= WZRD_VCO_MIN && vco_freq <= WZRD_VCO_MAX) {
+ 				for (o = WZRD_O_MIN; o <= WZRD_O_MAX; o++) {
+-					freq = DIV_ROUND_CLOSEST(vco_freq, o);
++					freq = DIV_ROUND_CLOSEST_ULL(vco_freq, o);
+ 					diff = abs(freq - rate);
+ 
+ 					if (diff < WZRD_MIN_ERR) {
+@@ -299,12 +300,13 @@ static int clk_wzrd_dynamic_all_nolock(struct clk_hw *hw, unsigned long rate,
+ 	if (err)
+ 		pr_err("failed to get divisors\n");
+ 
+-	vco_freq = DIV_ROUND_CLOSEST((parent_rate * divider->valuem), divider->valued);
+-	rate_div = DIV_ROUND_CLOSEST((vco_freq * WZRD_FRAC_POINTS), rate);
++	vco_freq = DIV_ROUND_CLOSEST_ULL((parent_rate * divider->valuem), divider->valued);
++	rate_div = DIV_ROUND_CLOSEST_ULL((vco_freq * WZRD_FRAC_POINTS), rate);
+ 
+-	clockout0_div = rate_div / WZRD_FRAC_POINTS;
++	clockout0_div = rate_div;
++	do_div(clockout0_div, WZRD_FRAC_POINTS);
+ 
+-	pre = DIV_ROUND_CLOSEST((vco_freq * WZRD_FRAC_POINTS), rate);
++	pre = DIV_ROUND_CLOSEST_ULL((vco_freq * WZRD_FRAC_POINTS), rate);
+ 	f = (u32)(pre - (clockout0_div * WZRD_FRAC_POINTS));
+ 	f = f & WZRD_CLKOUT_FRAC_MASK;
+ 
+diff --git a/drivers/media/platform/xilinx/xilinx-hdmirxss.c b/drivers/media/platform/xilinx/xilinx-hdmirxss.c
+index 0f0b7a297148..d24e7293e5dd 100644
+--- a/drivers/media/platform/xilinx/xilinx-hdmirxss.c
++++ b/drivers/media/platform/xilinx/xilinx-hdmirxss.c
+@@ -6,6 +6,7 @@
+  * Author: Vishal Sagar <vishal.sagar@xilinx.com>
+  */
+ 
++#include <asm/div64.h>
+ #include <linux/clk.h>
+ #include <linux/bitfield.h>
+ #include <linux/delay.h>
+@@ -2554,7 +2555,7 @@ static void xhdmirx_vtdint_handler(struct xhdmirx_state *xhdmi)
+ 
+ 					vidclk = activepixfrlratio *
+ 						 DIV_ROUND_CLOSEST(xhdmi->frlclkfreqkhz, 100);
+-					vidclk = DIV_ROUND_CLOSEST(vidclk, totalpixfrlratio);
++					vidclk = DIV_ROUND_CLOSEST_ULL(vidclk, totalpixfrlratio);
+ 					xhdmi->stream.refclk = vidclk * 100000;
+ 					if (xhdmirx1_get_video_properties(xhdmi))
+ 						dev_err_ratelimited(xhdmi->dev, "Failed get video properties!");
+@@ -2567,8 +2568,7 @@ static void xhdmirx_vtdint_handler(struct xhdmirx_state *xhdmi)
+ 
+ 					vidclk = (xhdmi->stream.pixelclk / 100000) / COREPIXPERCLK;
+ 					vidclk = xhdmi->vidclkfreqkhz / vidclk;
+-					remainder = vidclk % 100;
+-					vidclk = vidclk / 100;
++					remainder = do_div(vidclk, 100);
+ 					if (remainder >= 50)
+ 						vidclk++;
+ 
