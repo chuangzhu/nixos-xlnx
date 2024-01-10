@@ -6,7 +6,7 @@ This project isn't considered stable yet. Options may change anytime without not
 
 ## Limitations
 
-Device-tree and FSBL BSP generation from XSA is highly couple with Vitis HSI, and I haven't figured out a trivial way to generate them with Nix. Currently you have to build FSBL and device-tree with Vitis. I wrote a simple Vitis XSCT script [`vitisgenfw.tcl`](./vitisgenfw.tcl) to make that process a bit easier.
+Device-tree and FSBL BSP generation from XSA is highly coupled with Vitis HSI, and I haven't figured out a trivial way to generate them with Nix. Currently you have to build FSBL and device-tree with Vitis. I wrote a simple Vitis XSCT script [`vitisgenfw.tcl`](./vitisgenfw.tcl) to make that process a bit easier.
 
 Vivado 2023 introduces system device tree, which is a variation of device tree that can be used to generate FSBL BSP. This project currently only targets Vivado 2022.2 so I haven't tried that.
 

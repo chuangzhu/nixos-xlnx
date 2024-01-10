@@ -97,11 +97,12 @@
       "ehci_pci"
       "ohci_hcd"
       "ohci_pci"
-      "xhci_hcd"
-      "xhci_pci"
       "usbhid"
       "hid_generic" "hid_lenovo" "hid_apple" "hid_roccat"
       "hid_logitech_hidpp" "hid_logitech_dj" "hid_microsoft" "hid_cherry"
+    ] ++ lib.optionals (config.hardware.zynq.platform != "zynq") [
+      "xhci_hcd"
+      "xhci_pci"
       # Broadcom
       "vc4"
     ];

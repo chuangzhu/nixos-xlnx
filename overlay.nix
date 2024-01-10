@@ -5,8 +5,8 @@ final: prev: {
   ubootZynqMP = prev.callPackage ./u-boot-xlnx.nix { platform = "zynqmp"; };
   ubootZynq = prev.callPackage ./u-boot-xlnx.nix { platform = "zynq"; };
   armTrustedFirmwareZynqMP = prev.callPackage ./arm-trusted-firmware-xlnx.nix { };
-  boot-bin-zynqmp = prev.callPackage ./boot-bin.nix { platform = "zynqmp"; };
-  boot-bin-zynq = prev.callPackage ./boot-bin.nix { platform = "zynq"; };
+  boot-bin-zynqmp = prev.callPackage ./boot-bin.nix { platform = "zynqmp"; xilinx-bootgen = final.buildPackages.xilinx-bootgen_2022_2; };
+  boot-bin-zynq = prev.callPackage ./boot-bin.nix { platform = "zynq"; xilinx-bootgen = final.buildPackages.xilinx-bootgen_2022_2; };
   linux_zynqmp = prev.callPackage ./linux-xlnx { defconfig = "xilinx_defconfig"; kernelPatches = [ ]; };
   linux_zynq = prev.callPackage ./linux-xlnx { defconfig = "xilinx_zynq_defconfig"; kernelPatches = [ ]; };
   linuxPackages_zynqmp = (prev.linuxKernel.packagesFor final.linux_zynqmp).extend final.xlnxExtraLinuxPackages;
