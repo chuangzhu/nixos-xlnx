@@ -98,7 +98,9 @@ ssh root@zynqmpboard.local xlnx-firmware-update
   - Even if you don't have a AArch64 builder, the build time for emulated builds is still acceptable given the small amount of packages you need to build.
 * For Zynq 7000, Nixpkgs doesn't provide a binary cache for armv7l-linux.
   - For native/emulated builds, you'll need to bootstrap from stage 0. For emulated builds, this is *really* time consuming.
-  - For armv7l-linux, cross builds and native/emulated have the same level of support Tier.
+  - For armv7l-linux, cross builds and native/emulated have the same level of support Tier. But from my experience, native/emulated builds are more problematic due to limited userbase.
+
+In short, I recommend native/enulated builds for ZynqMP, and cross builds for Zynq 7000.
 
 ### Emulated builds
 - For NixOS, add this to the *builder's* configuration.nix:

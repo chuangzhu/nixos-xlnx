@@ -40,6 +40,5 @@ in
 runCommand "BOOT.BIN" {
   nativeBuildInputs = [ xilinx-bootgen ];
 } ''
-  mkdir $out/
-  bootgen -image ${writeText "bootgen.bif" bif} -arch ${platform} -w -o $out/BOOT.BIN
+  bootgen -image ${writeText "bootgen.bif" bif} -arch ${platform} -w -o $out
 ''

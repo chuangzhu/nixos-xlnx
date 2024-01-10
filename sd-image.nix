@@ -62,7 +62,7 @@
       # Depending on the FSBL setup, BOOT.BIN can be quite large
       firmwareSize = 100;
       populateFirmwareCommands = ''
-        cp ${config.hardware.zynq.boot-bin}/BOOT.BIN firmware/
+        cp ${config.hardware.zynq.boot-bin} firmware/BOOT.BIN
       '';
       populateRootCommands = ''
         mkdir -p ./files/boot
@@ -75,7 +75,7 @@
         name = "xlnx-firmware-update";
         text = ''
           systemctl start boot-firmware.mount
-          cp ${config.hardware.zynq.boot-bin}/BOOT.BIN /boot/firmware/
+          cp ${config.hardware.zynq.boot-bin} /boot/firmware/BOOT.BIN
         '';
       })
     ];
