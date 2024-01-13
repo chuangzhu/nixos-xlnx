@@ -47,7 +47,7 @@ if {$platform == "zynqmp"} {
 } elseif {$platform == "zynq"} {
 	set arch "ps7_cortexa9_0"
 	set template "Zynq FSBL"
-	set dtfile {pcw.dtsi skeleton.dtsi zynq-7000.dtsi system-top.dts system.dtb}
+	set dtfile {pcw.dtsi pl.dtsi skeleton.dtsi zynq-7000.dtsi system-top.dts system.dtb}
 } else {
 	puts "Platform should be either zynq or zynqmp!"
 }
