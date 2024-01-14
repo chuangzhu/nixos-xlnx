@@ -36,6 +36,7 @@ Assuming you have Nix flakes enabled, configure NixOS as follows:
 
         ({ pkgs, lib, config, ... }: {
           nixpkgs.hostPlatform = "aarch64-linux";  # Or "armv7l-linux" for Zynq 7000
+          # nixpkgs.buildPlatform = "x86_64-linux";
           hardware.zynq = {
             platform = "zynqmp";  # Or "zynq" for Zynq 7000
             bitstream = ./output/directory/system.bit;
@@ -100,7 +101,7 @@ ssh root@zynqmpboard.local xlnx-firmware-update
   - For native/emulated builds, you'll need to bootstrap from stage 0. For emulated builds, this is *really* time consuming.
   - For armv7l-linux, cross builds and native/emulated have the same level of support Tier. But from my experience, native/emulated builds are more problematic due to limited userbase.
 
-In short, I recommend native/enulated builds for ZynqMP, and cross builds for Zynq 7000.
+In short, I recommend native/emulated builds for ZynqMP, and cross builds for Zynq 7000.
 
 ### Emulated builds
 - For NixOS, add this to the *builder's* configuration.nix:
@@ -115,9 +116,9 @@ In short, I recommend native/enulated builds for ZynqMP, and cross builds for Zy
   Restart `systemd-binfmt.service`. Add `extra-platforms = armv7l-linux` to your `/etc/nix/nix.conf`. Restart `nix-daemon.service`.
 
 ### Cross builds
-Set `nixpkgs.hostPlatform` in the *target's* configuration to your *builder's* platform, for example:
+Set `nixpkgs.buildPlatform` in the *target's* configuration to your *builder's* platform, for example:
 ```nix
-nixpkgs.hostPlatform = "x86_64-linux";
+nixpkgs.buildPlatform = "x86_64-linux";
 ```
 
 ### Native builds
