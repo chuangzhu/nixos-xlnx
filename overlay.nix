@@ -1,33 +1,33 @@
 final: prev: {
 
-  inherit (prev.callPackages ./embeddedsw.nix { })
+  inherit (prev.callPackages ./pkgs/embeddedsw.nix { })
     zynqmp-fsbl zynqmp-pmufw;
-  ubootZynqMP = prev.callPackage ./u-boot-xlnx.nix { platform = "zynqmp"; };
-  ubootZynq = prev.callPackage ./u-boot-xlnx.nix { platform = "zynq"; };
-  armTrustedFirmwareZynqMP = prev.callPackage ./arm-trusted-firmware-xlnx.nix { };
-  boot-bin-zynqmp = prev.callPackage ./boot-bin.nix { platform = "zynqmp"; xilinx-bootgen = final.buildPackages.xilinx-bootgen_2022_2; };
-  boot-bin-zynq = prev.callPackage ./boot-bin.nix { platform = "zynq"; xilinx-bootgen = final.buildPackages.xilinx-bootgen_2022_2; };
-  linux_zynqmp = prev.callPackage ./linux-xlnx { defconfig = "xilinx_defconfig"; kernelPatches = [ ]; };
-  linux_zynq = prev.callPackage ./linux-xlnx { defconfig = "xilinx_zynq_defconfig"; kernelPatches = [ ]; };
+  ubootZynqMP = prev.callPackage ./pkgs/u-boot-xlnx.nix { platform = "zynqmp"; };
+  ubootZynq = prev.callPackage ./pkgs/u-boot-xlnx.nix { platform = "zynq"; };
+  armTrustedFirmwareZynqMP = prev.callPackage ./pkgs/arm-trusted-firmware-xlnx.nix { };
+  boot-bin-zynqmp = prev.callPackage ./pkgs/boot-bin.nix { platform = "zynqmp"; xilinx-bootgen = final.buildPackages.xilinx-bootgen_2022_2; };
+  boot-bin-zynq = prev.callPackage ./pkgs/boot-bin.nix { platform = "zynq"; xilinx-bootgen = final.buildPackages.xilinx-bootgen_2022_2; };
+  linux_zynqmp = prev.callPackage ./pkgs/linux-xlnx { defconfig = "xilinx_defconfig"; kernelPatches = [ ]; };
+  linux_zynq = prev.callPackage ./pkgs/linux-xlnx { defconfig = "xilinx_zynq_defconfig"; kernelPatches = [ ]; };
   linuxPackages_zynqmp = (prev.linuxKernel.packagesFor final.linux_zynqmp).extend final.xlnxExtraLinuxPackages;
   linuxPackages_zynq = (prev.linuxKernel.packagesFor final.linux_zynq).extend final.xlnxExtraLinuxPackages;
 
   xlnxExtraLinuxPackages= lfinal: lprev: {
-    xlnx-hdmi-modules = lprev.callPackage ./hdmi-modules.nix { };
-    xlnx-dp-modules = lprev.callPackage ./dp-modules.nix { };
-    mali-module-xlnx = lprev.callPackage ./mali-module-xlnx.nix { };
+    xlnx-hdmi-modules = lprev.callPackage ./pkgs/hdmi-modules.nix { };
+    xlnx-dp-modules = lprev.callPackage ./pkgs/dp-modules.nix { };
+    mali-module-xlnx = lprev.callPackage ./pkgs/mali-module-xlnx.nix { };
   };
 
-  libmali-xlnx = prev.callPackages ./libmali-xlnx.nix { };
-  libomxil-xlnx = prev.callPackage ./libomxil-xlnx.nix { };
-  libvcu-xlnx = prev.callPackage ./libvcu-xlnx.nix { };
+  libmali-xlnx = prev.callPackages ./pkgs/libmali-xlnx.nix { };
+  libomxil-xlnx = prev.callPackage ./pkgs/libomxil-xlnx.nix { };
+  libvcu-xlnx = prev.callPackage ./pkgs/libvcu-xlnx.nix { };
 
   xorg = prev.xorg // {
-    xf86videoarmsoc = prev.callPackage ./xf86-video-armsoc.nix { };
+    xf86videoarmsoc = prev.callPackage ./pkgs/xf86-video-armsoc.nix { };
   };
 
   gst_all_1 = prev.gst_all_1 // {
-    gst-omx-zynqultrascaleplus = (prev.callPackage ./gst-omx.nix { omxTarget = "zynqultrascaleplus"; }).overrideAttrs (super: {
+    gst-omx-zynqultrascaleplus = (prev.callPackage ./pkgs/gst-omx.nix { omxTarget = "zynqultrascaleplus"; }).overrideAttrs (super: {
       mesonFlags = super.mesonFlags ++ [ (prev.lib.mesonOption "header_path" "${final.libomxil-xlnx}/include/vcu-omx-il") ];
       postPatch = super.postPatch + ''
         substituteInPlace config/zynqultrascaleplus/gstomx.conf --replace "/usr" "${final.libomxil-xlnx}"
@@ -70,13 +70,8 @@ final: prev: {
         "-Damfcodec=disabled" "-Ddirectshow=disabled" "-Dqsv=disabled"
       ])) super.mesonFlags ++ [ "-Dmediasrcbin=disabled" ];
     });
-    gst-omx-zynqultrascaleplus = (prev.callPackage ./gst-omx.nix { omxTarget = "zynqultrascaleplus"; }).overrideAttrs (super: rec {
+    gst-omx-zynqultrascaleplus = (prev.callPackage ./pkgs/gst-omx.nix { omxTarget = "zynqultrascaleplus"; }).overrideAttrs (super: rec {
       inherit version; src = "${src}/subprojects/gst-omx";
-      # inherit version;
-      # src = prev.fetchurl {
-      #   url = "https://gstreamer.freedesktop.org/src/${super.pname}/${super.pname}-${version}.tar.xz";
-      #   hash = "sha256-vMy8AlSM3BI/1JlE3USk8a3F0QfjbwENMg61JuIQeAY=";
-      # };
       mesonFlags = super.mesonFlags ++ [ (prev.lib.mesonOption "header_path" "${final.libomxil-xlnx}/include/vcu-omx-il") ];
       postPatch = super.postPatch + ''
         substituteInPlace config/zynqultrascaleplus/gstomx.conf --replace "/usr" "${final.libomxil-xlnx}"
