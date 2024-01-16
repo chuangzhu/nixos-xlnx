@@ -8,8 +8,6 @@ This project isn't considered stable yet. Options may change anytime without not
 
 Device-tree and FSBL BSP generation from XSA is highly coupled with Vitis HSI, and I haven't figured out a trivial way to generate them with Nix. Currently you have to build FSBL and device-tree with Vitis. I wrote a simple Vitis XSCT script [`vitisgenfw.tcl`](./vitisgenfw.tcl) to make that process a bit easier.
 
-Vivado 2023 introduces system device tree, which is a variation of device tree that can be used to generate FSBL BSP. This project currently only targets Vivado 2022.2 so I haven't tried that.
-
 This project targets 2022.2 only because I use that version in a project. More versions are planned but I don't expect I'll be able to test them on a real board any time soon.
 
 ## Build SD card images
@@ -22,7 +20,7 @@ source /installation/path/to/Vitis/2022.2/settings64.sh
 xsct ./vitisgenfw.tcl vivado_exported.xsa ./output/directory/ -platform zynqmp  # Or "zynq" for Zynq 7000
 ```
 
-Assuming you have Nix flakes enabled, configure NixOS as follows:
+Assuming you have [Nix flakes](https://nixos.wiki/wiki/Flakes) enabled, configure NixOS as follows:
 
 ```nix
 {
@@ -96,7 +94,7 @@ ssh root@zynqmpboard.local xlnx-firmware-update
 
 * For ZynqMP, Nixpkgs provides tons of prebuilt packages for aarch64-linux native/emulated builds, so you only need to build a small amount of packages.
   - For aarch64-linux, native/emulated builds have a higher [support Tier in Nixpkgs](https://github.com/NixOS/rfcs/blob/master/rfcs/0046-platform-support-tiers.md) than cross builds.
-  - Even if you don't have a AArch64 builder, the build time for emulated builds is still acceptable given the small amount of packages you need to build.
+  - Even if you don't have an AArch64 builder, the build time for emulated builds is still acceptable given the small amount of packages you need to build.
 * For Zynq 7000, Nixpkgs doesn't provide a binary cache for armv7l-linux.
   - For native/emulated builds, you'll need to bootstrap from stage 0. For emulated builds, this is *really* time consuming.
   - For armv7l-linux, cross builds and native/emulated have the same level of support Tier. But from my experience, native/emulated builds are more problematic due to limited userbase.

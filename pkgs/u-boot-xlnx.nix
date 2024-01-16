@@ -1,6 +1,5 @@
 { lib
 , fetchFromGitHub
-, buildArmTrustedFirmware
 , buildUBoot
 , stdenv
 , platform ? "zynqmp"
