@@ -12,10 +12,13 @@ final: prev: {
   linuxPackages_zynqmp = (prev.linuxKernel.packagesFor final.linux_zynqmp).extend final.xlnxExtraLinuxPackages;
   linuxPackages_zynq = (prev.linuxKernel.packagesFor final.linux_zynq).extend final.xlnxExtraLinuxPackages;
 
-  xlnxExtraLinuxPackages= lfinal: lprev: {
-    xlnx-hdmi-modules = lprev.callPackage ./pkgs/hdmi-modules.nix { };
-    xlnx-dp-modules = lprev.callPackage ./pkgs/dp-modules.nix { };
-    mali-module-xlnx = lprev.callPackage ./pkgs/mali-module-xlnx.nix { };
+  xlnxExtraLinuxPackages= kfinal: kprev: {
+    xlnx-hdmi-modules = kprev.callPackage ./pkgs/hdmi-modules.nix { };
+    xlnx-dp-modules = kprev.callPackage ./pkgs/dp-modules.nix { };
+    mali-module-xlnx = kprev.callPackage ./pkgs/mali-module-xlnx.nix { };
+    xlnx-dma-proxy = kprev.callPackage ./pkgs/dma-proxy.nix { };
+    bperez77-xilinx-axidma = kprev.callPackage ./pkgs/xilinx-axidma.nix { };
+    jacobfeder-axisfifo = kprev.callPackage ./pkgs/axisfifo.nix { };
   };
 
   libmali-xlnx = prev.callPackages ./pkgs/libmali-xlnx.nix { };
