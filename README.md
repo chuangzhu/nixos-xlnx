@@ -50,6 +50,8 @@ Assuming you have [Nix flakes](https://nixos.wiki/wiki/Flakes) enabled, configur
             enable = true;
             settings.PermitRootLogin = "yes";
           };
+          # If zfs-kernel fails to build, add this line to exclude ZFS support
+          boot.supportedFilesystems = lib.mkForce [ "btrfs" "reiserfs" "vfat" "f2fs" "xfs" "ntfs" "cifs" ];
           # ... Other NixOS configurations
         })
 

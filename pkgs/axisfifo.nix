@@ -32,7 +32,7 @@ stdenv.mkDerivation rec {
 
   meta = with lib; {
     description = "Zynq SoC Linux kernel driver for Xilinx AXI-Stream FIFO IP";
-    homepage = "https://github.com/jacobfeder/axisfifo";
+    homepage = "https://support.xilinx.com/s/question/0D52E00006hpglYSAQ/axistream-fifo-linux-driver";
     license = with licenses; [ gpl2Only gpl3Only ];
     platforms = platforms.linux;
     maintainer = with maintainers; [ chuangzhu ];
