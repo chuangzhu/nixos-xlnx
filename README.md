@@ -108,12 +108,12 @@ In short, I recommend native/emulated builds for ZynqMP, and cross builds for Zy
   ```nix
   boot.binfmt.emulatedSystems = [ "aarch64-linux" "armv7l-linux" ];
   ```
-- For other systemd-based Linux distros, you need to install `qemu-user-static` (something like that), edit `/etc/binfmt.d/arm.conf` as the follows:
+- For other systemd-based Linux distros, you need to install `qemu-user-static` (something like that), edit `/etc/binfmt.d/arm.conf` as follows:
   ```
   :aarch64-linux:M::\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\xb7\x00:\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\x00\xff\xfe\xff\xff\xff:/usr/bin/qemu-aarch64-static:PF
   :armv7l-linux:M::\x7fELF\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x28\x00:\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\x00\xff\xfe\xff\xff\xff:/usr/bin/qemu-armhf-static:PF
   ```
-  Restart `systemd-binfmt.service`. Add `extra-platforms = armv7l-linux` to your `/etc/nix/nix.conf`. Restart `nix-daemon.service`.
+  Restart `systemd-binfmt.service`. Add `extra-platforms = aarch64-linux armv7l-linux` to your `/etc/nix/nix.conf`. Restart `nix-daemon.service`.
 
 ### Cross builds
 Set `nixpkgs.buildPlatform` in the *target's* configuration to your *builder's* platform, for example:
