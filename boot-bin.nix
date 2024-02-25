@@ -53,10 +53,31 @@
 
     boot-bin = lib.mkOption {
       type = lib.types.path;
-      default = pkgs."boot-bin-${config.hardware.zynq.platform}".override {
-        inherit (config.hardware.zynq) bitstream fsbl pmufw;
+      default = let
         dtb = "${config.hardware.deviceTree.package}/system.dtb";
-      };
+        bif = {
+          zynqmp = ''
+            the_ROM_image: {
+              [bootloader, destination_cpu=a53-0] ${config.hardware.zynq.fsbl}
+              [pmufw_image] ${config.hardware.zynq.pmufw}
+              [destination_device=pl] ${config.hardware.zynq.bitstream}
+              [destination_cpu=a53-0, exception_level=el-3, trustzone] ${pkgs.armTrustedFirmwareZynqMP}/bl31.elf
+              [destination_cpu=a53-0, load=0x00100000] ${dtb}
+              [destination_cpu=a53-0, exception_level=el-2] ${pkgs.ubootZynqMP}/u-boot.elf
+            }
+          '';
+          zynq = ''
+            the_ROM_image: {
+              [bootloader] ${config.hardware.zynq.fsbl}
+              ${config.hardware.zynq.bitstream}
+              ${pkgs.ubootZynq}/u-boot.elf
+              [load=0x00100000] ${dtb}
+            }
+          '';
+        }.${config.hardware.zynq.platform};
+      in pkgs.runCommand "BOOT.BIN" { nativeBuildInputs = [ pkgs.xilinx-bootgen_2022_2 ]; } ''
+        bootgen -image ${pkgs.writeText "bootgen.bif" bif} -arch ${config.hardware.zynq.platform} -w -o $out
+      '';
       description = lib.mdDoc ''
         You can build BOOT.BIN without building the whole system using
         {command}`nix build .#nixosConfigurations.<hostname>.config.hardware.zynq.boot-bin`
