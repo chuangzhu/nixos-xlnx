@@ -12,6 +12,12 @@ stdenv.mkDerivation (finalAttrs: {
   pname = "xf86-video-armsoc";
   version = "1.4.1";
 
+  # The <nixpkgs/pkgs/servers/x11/xorg/builder.sh> builder must be used, or
+  # Failed to load armsoc_drv.so: undefined symbol: "exaDriverAlloc"
+  builder = lib.elemAt xorg.xf86videofbdev.args 1;
+  hardeningDisable = [ "bindnow" "relro" ];
+  strictDeps = true;
+
   src = fetchFromGitLab {
     domain = "gitlab.freedesktop.org";
     group = "xorg";
