@@ -13,11 +13,13 @@ final: prev: {
   xlnxExtraLinuxPackages= kfinal: kprev: {
     xlnx-hdmi-modules = kprev.callPackage ./pkgs/hdmi-modules.nix { };
     xlnx-dp-modules = kprev.callPackage ./pkgs/dp-modules.nix { };
+    xlnx-vcu-modules = kprev.callPackage ./pkgs/vcu-modules.nix { };
     mali-module-xlnx = kprev.callPackage ./pkgs/mali-module-xlnx.nix { };
     xlnx-dma-proxy = kprev.callPackage ./pkgs/dma-proxy.nix { };
     bperez77-xilinx-axidma = kprev.callPackage ./pkgs/xilinx-axidma.nix { };
     jacobfeder-axisfifo = kprev.callPackage ./pkgs/axisfifo.nix { };
   };
+  xlnx-vcu-firmware = prev.callPackage ./pkgs/vcu-firmware.nix { };
 
   libmali-xlnx = prev.callPackages ./pkgs/libmali-xlnx.nix { };
   libomxil-xlnx = prev.callPackage ./pkgs/libomxil-xlnx.nix { };
