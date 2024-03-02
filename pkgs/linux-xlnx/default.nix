@@ -26,7 +26,7 @@ buildLinux (args // {
     USB_XHCI_HCD = no;
     USB_DWC3 = no;
     USB_CDNS_SUPPORT = no;
-  } //  lib.optionalAttrs stdenv.is32bit {
+  } // lib.optionalAttrs stdenv.is32bit {
     VIDEO_XILINX_HDMI21RXSS = no;  # FIXME: div64
   };
 
