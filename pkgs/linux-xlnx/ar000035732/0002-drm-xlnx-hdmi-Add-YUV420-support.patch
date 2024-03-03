@@ -1,0 +1,118 @@
+# Copyright 2023, Advanced Micro Devices, Inc
+# SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note
+# Downloaded from https://support.xilinx.com/s/article/000035732?language=en_US
+From 5eb97af582b0b8e22c5bf152739d43e54e6656f5 Mon Sep 17 00:00:00 2001
+From: Rajesh Gugulothu <rajesh.gugulothu@amd.com>
+Date: Fri, 6 Oct 2023 10:53:07 +0530
+Subject: [LINUX PATCH 2/5] drm: xlnx: hdmi:  Add YUV420 support
+
+Add support for YUV420 color format
+
+Signed-off-by: Rajesh Gugulothu <rajesh.gugulothu@amd.com>
+---
+ drivers/gpu/drm/xlnx/xlnx_hdmi.c | 54 +++++++++++++++++++++++++++++---
+ 1 file changed, 50 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/gpu/drm/xlnx/xlnx_hdmi.c b/drivers/gpu/drm/xlnx/xlnx_hdmi.c
+index f28c4603dd35..a5b5a2040d19 100644
+--- a/drivers/gpu/drm/xlnx/xlnx_hdmi.c
++++ b/drivers/gpu/drm/xlnx/xlnx_hdmi.c
+@@ -641,6 +641,10 @@ static struct clk_bulk_data hdmitx_clks[] = {
+ 	xlnx_hdmi_writel(hdmi, HDMI_TX_PIO_OUT_CLR,\
+ 			 HDMI_TX_PIO_OUT_BRIDGE_PIXEL)
+ 
++#define xlnx_pioout_bridge_yuv_set(hdmi) \
++	xlnx_hdmi_writel(hdmi, HDMI_TX_PIO_OUT_SET,\
++			 HDMI_TX_PIO_OUT_BRIDGE_YUV420)
++
+ #define xlnx_hdmi_auxintr_enable(hdmi) \
+ 	xlnx_hdmi_writel(hdmi, HDMI_TX_AUX_CTRL_SET,\
+ 			 HDMI_TX_AUD_CTRL_IE)
+@@ -941,6 +945,16 @@ static void xlnx_hdmi_vtc_set_timing(struct xlnx_hdmi *hdmi,
+ 		hdmi->config.htiming_div_fact;
+ 	hsync_len = (mode->hsync_end - mode->hsync_start) /
+ 		hdmi->config.htiming_div_fact;
++	if (hdmi->xvidc_colorfmt == HDMI_TX_CSF_YCRCB_420) {
++		if (hactive & 0x1 || hfront_porch & 0x1 ||
++		    hbackporch_start & 0x1 || hsync_len & 0x1)
++			dev_dbg(hdmi->dev, "VTC does not support this timing\n");
++
++		hactive = hactive / 2;
++		hfront_porch = hfront_porch / 2;
++		hback_porch = hback_porch / 2;
++		hsync_len = hsync_len / 2;
++	}
+ 	htotal = hactive + hfront_porch + hsync_len + hback_porch;
+ 	hsync_start = hactive + hfront_porch;
+ 	hbackporch_start = hsync_start + hsync_len;
+@@ -2498,8 +2512,13 @@ static void xlnx_hdmi_piointr_handler(struct xlnx_hdmi *hdmi)
+ 
+ 				hdmi->hdmi_stream_up = 1;
+ 
+-				xlnx_pioout_bridge_yuv_clr(hdmi);
+-				xlnx_pioout_bridge_pixel_clr(hdmi);
++				if (hdmi->xvidc_colorfmt == HDMI_TX_CSF_YCRCB_420) {
++					xlnx_pioout_bridge_yuv_set(hdmi);
++					xlnx_pioout_bridge_pixel_clr(hdmi);
++				} else {
++					xlnx_pioout_bridge_yuv_clr(hdmi);
++					xlnx_pioout_bridge_pixel_clr(hdmi);
++				}
+ 				xlnx_hdmi_stream_start(hdmi);
+ 				xlnx_hdmi_clkratio(hdmi);
+ 			}
+@@ -2961,6 +2980,33 @@ color_formats xlnx_hdmi_find_media_bus(struct xlnx_hdmi *hdmi,
+ 	}
+ }
+ 
++static u64 xlnx_hdmi_get_tmdsclk(struct xlnx_hdmi *hdmi, struct drm_display_mode *adjusted_mode)
++{
++	u32 tmdsclk;
++
++	tmdsclk = adjusted_mode->clock * 1000;
++	if (hdmi->xvidc_colorfmt == HDMI_TX_CSF_YCRCB_420)
++		tmdsclk = tmdsclk >> 1;
++
++	if (hdmi->xvidc_colorfmt == HDMI_TX_CSF_YCRCB_422) {
++		switch (hdmi->config.bpc) {
++		case HDMI_TX_BPC_10:
++			tmdsclk = (tmdsclk * 5) >> 2;
++			break;
++		case HDMI_TX_BPC_12:
++			tmdsclk = (tmdsclk * 3) >> 1;
++			break;
++		case HDMI_TX_BPC_16:
++			tmdsclk = tmdsclk << 1;
++			break;
++		default:
++			break;
++		}
++	}
++
++	return tmdsclk;
++}
++
+ /**
+  * xlnx_hdmi_encoder_atomic_mode_set - drive the HDMI timing parameters
+  *
+@@ -3049,7 +3095,7 @@ xlnx_hdmi_encoder_atomic_mode_set(struct drm_encoder *encoder,
+ 	dev_dbg(hdmi->dev, "xvidc_colorfmt = %d\n", hdmi->xvidc_colorfmt);
+ 	dev_dbg(hdmi->dev, "xvidc_colordepth = %d\n", hdmi->xvidc_colordepth);
+ 
+-	hdmi->tmds_clk = adjusted_mode->clock * 1000;
++	hdmi->tmds_clk = xlnx_hdmi_get_tmdsclk(hdmi, adjusted_mode);
+ 	dev_dbg(hdmi->dev, "tmds_clk = %u\n", hdmi->tmds_clk);
+ 
+ 	if (connector->display_info.is_hdmi) {
+@@ -3115,7 +3161,7 @@ xlnx_hdmi_encoder_atomic_mode_set(struct drm_encoder *encoder,
+ 		xlnx_pioout_bridge_pixel_clr(hdmi);
+ 	}
+ 
+-	dev_dbg(hdmi->dev, "mode->clock = %u Hz\n", adjusted_mode->clock);
++	dev_dbg(hdmi->dev, "tmds_clk = %u Hz\n", hdmi->tmds_clk);
+ 
+ 	hdmi->wait_for_streamup = 0;
+ 	wait_event_timeout(hdmi->wait_event, hdmi->wait_for_streamup,
+-- 
+2.17.1
+

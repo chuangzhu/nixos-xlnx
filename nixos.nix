@@ -51,7 +51,7 @@
       "xhci_hcd"
       "xhci_pci"
       # Broadcom
-      "vc4"
+      # "vc4"
     ];
   };
 }

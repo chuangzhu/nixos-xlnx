@@ -5,22 +5,27 @@
 
 stdenv.mkDerivation rec {
   pname = "libvcu-xlnx";
-  version = "2022.2";
+  version = "2023.2";
 
   src = fetchFromGitHub {
     owner = "Xilinx";
     repo = "vcu-ctrl-sw";
     rev = "xilinx_v${version}";
-    hash = "sha256-TIN0zkXeUL9Bh12v4ZUwFfbitpH2bjUYXd82uhPnOds=";
+    hash = "sha256-vayjjI7e3QNzg07l/FQNmx0BkZ0y6qENzDZ1a47t3iE=";
   };
 
   installTargets = [ "install_headers" ];
-  installFlags = [ "PREFIX=$(out)" ];
+  installFlags = [
+    "PREFIX=$(out)"
+  ] ++ lib.optionals (lib.versionAtLeast version "2023.2") [
+    "INSTALL_PATH=$(out)/bin"
+  ];
 
   postInstall = ''
-    install -Dm755 bin/ctrlsw_{en,de}coder -t $out/bin/
-    install -Dm755 bin/liballegro_{en,de}code.so -t $out/lib/
     for f in $out/lib/*.so; do ln -s "$f" "$f".0; done
+    install -Dm755 bin/liballegro_{en,de}code.so -t $out/lib/
+  '' + lib.optionalString (lib.versionOlder version "2023.2") ''
+    install -Dm755 bin/ctrlsw_{en,de}coder -t $out/bin/
   '';
 
   meta = with lib; {

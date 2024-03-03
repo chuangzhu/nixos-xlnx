@@ -82,13 +82,13 @@ final: prev: {
     });
   };
 
-  xilinx-bootgen_2022_2 = prev.xilinx-bootgen.overrideAttrs rec {
-    version = "xilinx_v2022.2";
+  xilinx-bootgen_2023_2 = prev.xilinx-bootgen.overrideAttrs rec {
+    version = "xilinx_v2023.2";
     src = prev.fetchFromGitHub {
       owner = "Xilinx";
       repo = "bootgen";
       rev = version;
-      hash = "sha256-bnvF0rRWvMuqeLjXfEQ9uaS1x/3iE/jLM3yoiBN0xbU=";
+      hash = "sha256-YRaq36N6uBHyjuHQ5hCO35Y+y818NuSjg/js181iItA=";
     };
   };
 }

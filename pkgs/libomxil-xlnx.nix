@@ -6,13 +6,13 @@
 
 stdenv.mkDerivation rec {
   pname = "libomxil-xlnx";
-  version = "2022.2";
+  version = "2023.2";
 
   src = fetchFromGitHub {
     owner = "Xilinx";
     repo = "vcu-omx-il";
     rev = "xilinx_v${version}";
-    hash = "sha256-fyfpvJuH0f1aEJMs/i6hbAfNYhIJ6nF44DxFQDbnHuY=";
+    hash = "sha256-IlYO2NLxaj8pLQwphNs27VL06KUo2ouWzrGmm0MIseM=";
   };
 
   postPatch = ''
@@ -25,9 +25,14 @@ stdenv.mkDerivation rec {
   installPhase = ''
     runHook preInstall
     install -Dm444 omx_header/*.h -t $out/include/vcu-omx-il/
-    install -Dm555 bin/omx_{en,de}coder -t $out/bin/
     install -Dm555 bin/libOMX.allegro.{core,video_{en,de}coder}.so -t $out/lib/
     for f in $out/lib/*.so; do ln -s "$f" "$f".1; done
+  '' + lib.optionalString (lib.versionAtLeast version "2023.2") ''
+    install -Dm555 bin/omx_encoder.exe -T $out/bin/omx_encoder
+    install -Dm555 bin/omx_decoder.exe -T $out/bin/omx_encoder
+  '' + lib.optionalString (lib.versionOlder version "2023.2") ''
+    install -Dm555 bin/omx_{en,de}coder -t $out/bin/
+  '' + ''
     runHook postInstall
   '';
 

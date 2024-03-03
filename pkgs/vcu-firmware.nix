@@ -2,13 +2,13 @@
 
 stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "vcu-firmware";
-  version = "2022.2";
+  version = "2023.2";
 
   src = fetchFromGitHub {
     owner = "Xilinx";
     repo = "vcu-firmware";
     rev = "xilinx_v${finalAttrs.version}";
-    hash = "sha256-QR5odG6gYidWL6wbjpPZ56F1pLtMYsWyoQhOxRkvw/8=";
+    hash = "sha256-FUUBrb09VAZNeLnx8dIPhSOM+lhNMufNeywWbnJ8pgc=";
   };
 
   installPhase = ''
@@ -18,7 +18,11 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     install -D -m644 1.0.0/lib/firmware/al5d_b.fw -t $out/lib/firmware/
     install -D -m644 1.0.0/lib/firmware/al5e.fw -t $out/lib/firmware/
     install -D -m644 1.0.0/lib/firmware/al5e_b.fw -t $out/lib/firmware/
+  '' + lib.optionalString (lib.versionAtLeast finalAttrs.version "2023.2") ''
+    install -D -m644 LICENSE.md -t $out/share/xlnx-vcu-firmware/
+  '' + lib.optionalString (lib.versionOlder finalAttrs.version "2023.2") ''
     install -D -m644 LICENSE -t $out/share/xlnx-vcu-firmware/
+  '' + ''
 
     runHook postInstall
   '';

@@ -5,12 +5,12 @@
 }:
 
 buildArmTrustedFirmware rec {
-  version = "2.6.0";
+  version = "2.8.0";
   src = fetchFromGitHub {
     owner = "Xilinx";
     repo = "arm-trusted-firmware";
-    rev = "xilinx-v2022.2";
-    hash = "sha256-yT9WofFgZLbGYXr6bxFuXL1ouC8UI+rICXBCmoM8ZLs=";
+    rev = "xilinx-v2023.2";
+    hash = "sha256-RvdBsskiSgquwnDf0g0dU8P6v4QxK4OqhtkF5K7lfyI=";
   };
   extraMakeFlags = [ "bl31" ];
   platform = "zynqmp";

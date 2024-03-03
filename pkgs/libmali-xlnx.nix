@@ -17,14 +17,14 @@ let
 
   mkMali = name: buildInputs: stdenvNoCC.mkDerivation rec {
     pname = "libmali-xlnx";
-    version = "2022.2";
+    version = "2023.2";
 
     outputs = [ "out" "dev" ];
     src = fetchFromGitHub {
       owner = "Xilinx";
       repo = "mali-userspace-binaries";
       rev = "xilinx_v${version}";
-      hash = "sha256-NTyKLPPngO9KM37SNRe+7SmljcYDzYjqfTnQaIILLMs=";
+      hash = "sha256-xUJM3BIqEeSVX6hgxRHCwdutS8zYM/1t9UVnv7EatZU=";
     };
 
     nativeBuildInputs = [ autoPatchelfHook ];
