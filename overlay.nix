@@ -91,4 +91,5 @@ final: prev: {
       hash = "sha256-YRaq36N6uBHyjuHQ5hCO35Y+y818NuSjg/js181iItA=";
     };
   };
+  python-lopper = prev.python3Packages.callPackage ./pkgs/lopper.nix { };
 }

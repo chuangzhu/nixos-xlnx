@@ -1,19 +1,21 @@
 { lib
 , stdenv
 , fetchFromGitHub
-, bspDir ? null
-, psu_init_c ? null
-, psu_init_h ? null
+, python3
+, python-lopper
+, cmake
+, sdtDir ? null
 }:
 
 let
-  version = "2022.2";
+  version = "2023.2";
   src = fetchFromGitHub {
     owner = "Xilinx";
     repo = "embeddedsw";
     rev = "xilinx_v${version}";
-    hash = "sha256-UDz9KK/Hw3qM1BAeKif30rE8Bi6C2uvuZlvyvtJCMfw=";
+    hash = "sha256-koBo9gmkWBqA6PaN5eNsnkCQRaeDWeHm/qBN8/ARW+E=";
   };
+  python = python3.withPackages (p: [ python-lopper p.pyyaml ]);
 in
 
 {
@@ -26,6 +28,7 @@ in
       substituteInPlace lib/sw_apps/zynqmp_pmufw/misc/xparameters.h \
         --replace "XPAR_MICROBLAZE_USE_BARREL 1" "XPAR_MICROBLAZE_USE_BARREL 0"
     '';
+
     makeFlags = [
       "-C" "lib/sw_apps/zynqmp_pmufw/src"
       "CC:=$(CC)" "COMPILER=$(CC)"
@@ -52,19 +55,38 @@ in
     pname = "zynqmp-fsbl";
     inherit version src;
 
+    nativeBuildInputs = [ python cmake ];
+
     postPatch = ''
       patchShebangs lib/sw_apps/zynqmp_fsbl/misc/copy_bsp.sh
-    '' + lib.optionalString (psu_init_c != null) ''
-      cp ${psu_init_c} lib/sw_apps/zynqmp_fsbl/misc/zcu102/psu_init.c
-    '' + lib.optionalString (psu_init_h != null) ''
-      cp ${psu_init_h} lib/sw_apps/zynqmp_fsbl/misc/zcu102/psu_init.h
     '';
+
+    configurePhase = ''
+      runHook preConfigure
+      export ESW_REPO=$(readlink -f .)
+      export BSP_DIR=$(mktemp -d)
+      pushd $BSP_DIR
+      $CPP -nostdinc -undef -x assembler-with-cpp ${sdtDir}/system-top.dts -o combined.dts
+      # Compile and decompile it to get the __symbols__ label node
+      dtc -@ -I dts -O dtb combined.dts -o combined.dtb
+      dtc -I dtb -O dts combined.dtb -o with-symbols.dts
+      python $ESW_REPO/scripts/pyesw/create_bsp.py -t zynqmp_fsbl -s with-symbols.dts -p psu_cortexa53_0
+      popd
+      python $ESW_REPO/scripts/pyesw/build_bsp.py -d $BSP_DIR
+      export APP_DIR=$(mktemp -d)
+      pushd $APP_DIR
+      python $ESW_REPO/scripts/pyesw/create_bsp.py -t zynqmp_fsbl -d $BSP_DIR
+      python $ESW_REPO/scripts/pyesw/build_bsp.py
+      popd
+      runHook postConfigure
+    '';
+
     makeFlags = [
       "-C" "lib/sw_apps/zynqmp_fsbl/src"
       "CC:=$(CC)" "COMPILER=$(CC)"
       "AR:=$(AR)" "ARCHIVER=$(AR)"
       "CROSS_COMP=${stdenv.targetPlatform.config}"
-    ] ++ lib.optional (bspDir != null) "BSP_DIR=${bspDir}";
+    ];
 
     installPhase = ''
       runHook preInstall
