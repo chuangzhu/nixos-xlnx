@@ -38,8 +38,8 @@ buildLinux (args // {
     # https://support.xilinx.com/s/article/000035732?language=en_US
     { name = "drm-xlnx-hdmi-Add-support-for-AVI-infoframes"; patch = ./ar000035732/0001-drm-xlnx-hdmi-Add-support-for-AVI-infoframes.patch; }
     { name = "drm-xlnx-hdmi-Add-YUV420-support"; patch = ./ar000035732/0002-drm-xlnx-hdmi-Add-YUV420-support.patch; }
-    # { name = "arm64-configs-Enable-CONFIG_DRM_XLNX_HDMITX-for-zynq"; patch = ./ar000035732/0003-arm64-configs-Enable-CONFIG_DRM_XLNX_HDMITX-for-zynq.patch; }
-    # { name = "arm64-configs-Enable-CONFIG_VIDEO_XILINX_HDMI21RXSS-"; patch = ./ar000035732/0004-arm64-configs-Enable-CONFIG_VIDEO_XILINX_HDMI21RXSS-.patch; }
+    { name = "arm64-configs-Enable-CONFIG_DRM_XLNX_HDMITX-for-zynq"; patch = ./ar000035732/0003-arm64-configs-Enable-CONFIG_DRM_XLNX_HDMITX-for-zynq.patch; }
+    { name = "arm64-configs-Enable-CONFIG_VIDEO_XILINX_HDMI21RXSS-"; patch = ./ar000035732/0004-arm64-configs-Enable-CONFIG_VIDEO_XILINX_HDMI21RXSS-.patch; }
     { name = "drm-xlnx-hdmi-Force-the-driver-to-work-only-in-TMDS-"; patch = ./ar000035732/0005-drm-xlnx-hdmi-Force-the-driver-to-work-only-in-TMDS-.patch; }
     # ERROR: modpost: "xlnx_hdcp_tx_set_keys" [drivers/gpu/drm/xlnx/xlnx_hdmi.ko] undefined!
     # ERROR: modpost: module xlnx_mpg2tsmux uses symbol dma_buf_unmap_attachment from namespace DMA_BUF, but does not import it.
