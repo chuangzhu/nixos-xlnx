@@ -73,7 +73,7 @@ final: prev: {
         "-Damfcodec=disabled" "-Ddirectshow=disabled" "-Dqsv=disabled"
       ])) super.mesonFlags ++ [ "-Dmediasrcbin=disabled" ];
     });
-    gst-omx-zynqultrascaleplus = (prev.callPackage ./pkgs/gst-omx.nix { omxTarget = "zynqultrascaleplus"; }).overrideAttrs (super: rec {
+    gst-omx-zynqultrascaleplus = (prev.callPackage ./pkgs/gst-omx.nix { omxTarget = "zynqultrascaleplus"; }).overrideAttrs (super: {
       inherit version; src = "${src}/subprojects/gst-omx";
       mesonFlags = super.mesonFlags ++ [ (prev.lib.mesonOption "header_path" "${final.libomxil-xlnx}/include/vcu-omx-il") ];
       postPatch = super.postPatch + ''

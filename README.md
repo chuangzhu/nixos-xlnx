@@ -154,17 +154,16 @@ I haven't successfully launched a normal display manager on ZynqMP yet. If you a
 
 ```nix
 services.xserver.enable = true;
-services.xserver.videoDrivers = lib.mkForce [ /*"armsoc"*/ "fbdev" ];
+services.xserver.videoDrivers = lib.mkForce [ "armsoc" ];
 services.xserver.displayManager.sx.enable = true;
 services.xserver.windowManager.i3.enable = true;
 systemd.services.i3 = {
-  wantedBy = [ "multi-user.target" ];
+  wantedBy = [ "graphical.target" ];
   script = ''
     . /etc/profile
+    chvt 7
     exec sx i3 -c /etc/i3/config
   '';
-  # Sometimes systemd deactivate it instantly even with no error
-  # Restart indefinitely
   unitConfig.StartLimitIntervalSec = 0;
   serviceConfig = {
     User = "root";
@@ -172,7 +171,7 @@ systemd.services.i3 = {
     PAMName = "login";
     WorkingDirectory = "~";
     Restart = "always";
-    TTYPath = "/dev/tty1";
+    TTYPath = "/dev/tty7";
     TTYReset = "yes";
     TTYVHangup = "yes";
     TTYVTDisallocate = "yes";
