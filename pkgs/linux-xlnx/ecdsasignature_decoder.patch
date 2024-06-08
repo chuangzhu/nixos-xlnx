@@ -1,0 +1,13 @@
+diff --git a/crypto/ecdsa.c b/crypto/ecdsa.c
+index fbd76498aba8..4a1355ffe191 100644
+--- a/crypto/ecdsa.c
++++ b/crypto/ecdsa.c
+@@ -185,6 +185,8 @@ static int ecdsa_verify(struct akcipher_request *req)
+ 	return ret;
+ }
+ 
++EXPORT_SYMBOL(ecdsasignature_decoder);
++
+ static int ecdsa_ecc_ctx_init(struct ecc_ctx *ctx, unsigned int curve_id)
+ {
+ 	ctx->curve_id = curve_id;

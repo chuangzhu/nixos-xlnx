@@ -2,13 +2,13 @@
 
 stdenv.mkDerivation (finalAttrs: {
   name = "xlnx-vcu-modules-${kernel.version}-${finalAttrs.version}";
-  version = "2023.2";
+  version = "2024.1";
 
   src = fetchFromGitHub {
     owner = "Xilinx";
     repo = "vcu-modules";
     rev = "xilinx_v${finalAttrs.version}";
-    hash = "sha256-6w+O0D3Gq/Vhc7LHCYyeyih3xAqnYUEYG/QEbOxm7Z4=";
+    hash = "sha256-QR+ltPrgjcHY/nkNsXkhBsYeYwGQCOhzzzV1qtVjyzw=";
   };
 
   nativeBuildInputs = kernel.moduleBuildDependencies ++ [ ];

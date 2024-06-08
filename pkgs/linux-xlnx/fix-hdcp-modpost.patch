@@ -1,9 +1,8 @@
-# SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note
 diff --git a/drivers/gpu/drm/xlnx/hdcp/xlnx_hdcp_tx.c b/drivers/gpu/drm/xlnx/hdcp/xlnx_hdcp_tx.c
-index 859482518946..0103e1e0353c 100644
+index 6f7611365414..fe6cf7b245d9 100644
 --- a/drivers/gpu/drm/xlnx/hdcp/xlnx_hdcp_tx.c
 +++ b/drivers/gpu/drm/xlnx/hdcp/xlnx_hdcp_tx.c
-@@ -81,6 +81,7 @@ void xlnx_hdcp_tx_process_cp_irq(struct xlnx_hdcptx *xtxhdcp)
+@@ -91,6 +91,7 @@ void xlnx_hdcp_tx_process_cp_irq(struct xlnx_hdcptx *xtxhdcp)
  			xlnx_hdcp2x_tx_process_cp_irq(xhdcp2x);
  	}
  }
@@ -11,7 +10,7 @@ index 859482518946..0103e1e0353c 100644
  
  /**
   * xlnx_hdcp_tx_init - Initialize HDCP transmitter based on hardware selection
-@@ -162,6 +163,7 @@ void *xlnx_hdcp_tx_init(struct device *dev, void *protocol_ref,
+@@ -173,6 +174,7 @@ void *xlnx_hdcp_tx_init(struct device *dev, void *protocol_ref,
  
  	return ERR_PTR(-ENOMEM);
  }
@@ -19,7 +18,7 @@ index 859482518946..0103e1e0353c 100644
  
  /**
   * xlnx_hdcp_timer_init - This function initializes timer submodule
-@@ -194,6 +196,7 @@ void *xlnx_hdcp_timer_init(struct device *dev, void __iomem *timer_base_address)
+@@ -205,6 +207,7 @@ void *xlnx_hdcp_timer_init(struct device *dev, void __iomem *timer_base_address)
  
  	return ERR_PTR(-ENOMEM);
  }
@@ -27,7 +26,7 @@ index 859482518946..0103e1e0353c 100644
  
  int xlnx_hdcp_tx_exit(struct xlnx_hdcptx *xtxhdcp)
  {
-@@ -221,6 +224,7 @@ int xlnx_hdcp_tx_exit(struct xlnx_hdcptx *xtxhdcp)
+@@ -232,6 +235,7 @@ int xlnx_hdcp_tx_exit(struct xlnx_hdcptx *xtxhdcp)
  hdcp_error:
  	return -EINVAL;
  }
@@ -35,7 +34,7 @@ index 859482518946..0103e1e0353c 100644
  
  void xlnx_hdcp_tx_timer_exit(struct xlnx_hdcptx *xtxhdcp)
  {
-@@ -229,6 +233,7 @@ void xlnx_hdcp_tx_timer_exit(struct xlnx_hdcptx *xtxhdcp)
+@@ -240,6 +244,7 @@ void xlnx_hdcp_tx_timer_exit(struct xlnx_hdcptx *xtxhdcp)
  	if (xtxhdcp->xhdcptmr)
  		devm_kfree(xtxhdcp->dev, xhdcptmr);
  }
@@ -43,7 +42,7 @@ index 859482518946..0103e1e0353c 100644
  
  int xlnx_hdcp_tx_set_keys(struct xlnx_hdcptx *xtxhdcp, const u8 *data)
  {
-@@ -257,6 +262,7 @@ int xlnx_hdcp_tx_set_keys(struct xlnx_hdcptx *xtxhdcp, const u8 *data)
+@@ -270,6 +275,7 @@ int xlnx_hdcp_tx_set_keys(struct xlnx_hdcptx *xtxhdcp, const u8 *data)
  
  	return ret;
  }
@@ -51,7 +50,7 @@ index 859482518946..0103e1e0353c 100644
  
  int xlnx_hdcp_tx_reset(struct xlnx_hdcptx *xtxhdcp)
  {
-@@ -297,6 +303,7 @@ int xlnx_hdcp_tx_reset(struct xlnx_hdcptx *xtxhdcp)
+@@ -309,6 +315,7 @@ int xlnx_hdcp_tx_reset(struct xlnx_hdcptx *xtxhdcp)
  
  	return 0;
  }
@@ -59,7 +58,7 @@ index 859482518946..0103e1e0353c 100644
  
  static void xlnx_hcdp_tx_timer_callback(void *xtxhdcptr, u8 tmrcntr_number)
  {
-@@ -347,6 +354,7 @@ int xlnx_start_hdcp_engine(struct xlnx_hdcptx *xtxhdcp, u8 lanecount)
+@@ -387,6 +394,7 @@ int xlnx_start_hdcp_engine(struct xlnx_hdcptx *xtxhdcp, u8 lanecount)
  
  	return 0;
  }
@@ -67,17 +66,20 @@ index 859482518946..0103e1e0353c 100644
  
  int xlnx_hdcp_tx_set_callback(void *ref,
  			      enum xlnx_hdcptx_callback_type callback_type,
-@@ -395,3 +403,4 @@ int xlnx_hdcp_tx_set_callback(void *ref,
+@@ -435,6 +443,7 @@ int xlnx_hdcp_tx_set_callback(void *ref,
  	}
  	return ret;
  }
 +EXPORT_SYMBOL(xlnx_hdcp_tx_set_callback);
+ 
+ void xlnx_hdcp1x_interrupt_handler(struct xlnx_hdcptx *xtxhdcp)
+ {
 diff --git a/drivers/staging/xlnx_tsmux/xlnx_mpg2tsmux.c b/drivers/staging/xlnx_tsmux/xlnx_mpg2tsmux.c
-index 2eae0172b326..21701344222a 100644
+index eab9d4efd609..9b241a2cd303 100644
 --- a/drivers/staging/xlnx_tsmux/xlnx_mpg2tsmux.c
 +++ b/drivers/staging/xlnx_tsmux/xlnx_mpg2tsmux.c
 @@ -1566,3 +1566,4 @@ module_exit(xlnx_tsmux_mod_exit);
  MODULE_AUTHOR("Xilinx Inc.");
  MODULE_DESCRIPTION("Xilinx mpeg2 transport stream muxer IP driver");
- MODULE_LICENSE("GPL v2");
+ MODULE_LICENSE("GPL");
 +MODULE_IMPORT_NS(DMA_BUF);

@@ -82,13 +82,13 @@ final: prev: {
     });
   };
 
-  xilinx-bootgen_2023_2 = prev.xilinx-bootgen.overrideAttrs rec {
-    version = "xilinx_v2023.2";
+  xilinx-bootgen_2024_1 = prev.xilinx-bootgen.overrideAttrs rec {
+    version = "xilinx_v2024.1";
     src = prev.fetchFromGitHub {
       owner = "Xilinx";
       repo = "bootgen";
       rev = version;
-      hash = "sha256-YRaq36N6uBHyjuHQ5hCO35Y+y818NuSjg/js181iItA=";
+      hash = "sha256-/gNAqjwfaD2NWxs2536XGv8g2IyRcQRHzgLcnCr4a34=";
     };
   };
   python-lopper = prev.python3Packages.callPackage ./pkgs/lopper.nix { };

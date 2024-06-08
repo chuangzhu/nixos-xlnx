@@ -2,13 +2,13 @@
 
 stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "vcu-firmware";
-  version = "2023.2";
+  version = "2024.1";
 
   src = fetchFromGitHub {
     owner = "Xilinx";
     repo = "vcu-firmware";
     rev = "xilinx_v${finalAttrs.version}";
-    hash = "sha256-FUUBrb09VAZNeLnx8dIPhSOM+lhNMufNeywWbnJ8pgc=";
+    hash = "sha256-P0aYkARGULzoLHj5DAict6Hg0goeWgeRzWzV5/nHzAw=";
   };
 
   installPhase = ''

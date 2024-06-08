@@ -8,12 +8,12 @@
 }:
 
 let
-  version = "2023.2";
+  version = "2024.1";
   src = fetchFromGitHub {
     owner = "Xilinx";
     repo = "embeddedsw";
     rev = "xilinx_v${version}";
-    hash = "sha256-koBo9gmkWBqA6PaN5eNsnkCQRaeDWeHm/qBN8/ARW+E=";
+    hash = "sha256-vh7tdHNd3miDZplTiRP8UWhQ/HLrjMcbQXCJjTO4p9o=";
   };
   python = python3.withPackages (p: [ python-lopper p.pyyaml ]);
 in

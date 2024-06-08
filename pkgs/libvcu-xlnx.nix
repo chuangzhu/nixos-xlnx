@@ -5,13 +5,13 @@
 
 stdenv.mkDerivation rec {
   pname = "libvcu-xlnx";
-  version = "2023.2";
+  version = "2024.1";
 
   src = fetchFromGitHub {
     owner = "Xilinx";
     repo = "vcu-ctrl-sw";
     rev = "xilinx_v${version}";
-    hash = "sha256-vayjjI7e3QNzg07l/FQNmx0BkZ0y6qENzDZ1a47t3iE=";
+    hash = "sha256-vLbzJktS7RFvPCpkNG07puSUxvd0yoe2R2rsltp77sE=";
   };
 
   installTargets = [ "install_headers" ];

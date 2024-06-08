@@ -75,7 +75,7 @@
             }
           '';
         }.${config.hardware.zynq.platform};
-      in pkgs.runCommand "BOOT.BIN" { nativeBuildInputs = [ pkgs.xilinx-bootgen_2023_2 ]; } ''
+      in pkgs.runCommand "BOOT.BIN" { nativeBuildInputs = [ pkgs.xilinx-bootgen_2024_1 ]; } ''
         bootgen -image ${pkgs.writeText "bootgen.bif" bif} -arch ${config.hardware.zynq.platform} -w -o $out
       '';
       description = lib.mdDoc ''

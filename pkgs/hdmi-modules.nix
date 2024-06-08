@@ -2,13 +2,13 @@
 
 stdenv.mkDerivation (finalAttrs: {
   name = "xlnx-hdmi-modules-${kernel.version}-${finalAttrs.version}";
-  version = "2023.2";
+  version = "2024.1";
 
   src = fetchFromGitHub {
     owner = "Xilinx";
     repo = "hdmi-modules";
     rev = "xilinx_v${finalAttrs.version}";
-    hash = "sha256-49pdwXKJ8Y7mk5+iQZGQpi2rC/ffYIk/RXHGoXS9vko=";
+    hash = "sha256-YZENLz7C54yVeqbIhMnEfnS1g0lTzu8Rr1GaKH7a0Z4=";
   };
 
   nativeBuildInputs = kernel.moduleBuildDependencies ++ [ ];

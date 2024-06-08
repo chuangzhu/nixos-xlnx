@@ -6,13 +6,13 @@
 
 stdenv.mkDerivation rec {
   pname = "libomxil-xlnx";
-  version = "2023.2";
+  version = "2024.1";
 
   src = fetchFromGitHub {
     owner = "Xilinx";
     repo = "vcu-omx-il";
     rev = "xilinx_v${version}";
-    hash = "sha256-IlYO2NLxaj8pLQwphNs27VL06KUo2ouWzrGmm0MIseM=";
+    hash = "sha256-mqD0F2V/kh5NzpkniHcCcclJ7Suzgn67+Kf4UAQAK7E=";
   };
 
   postPatch = ''

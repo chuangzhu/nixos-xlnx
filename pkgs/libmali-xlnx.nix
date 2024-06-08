@@ -17,7 +17,7 @@ let
 
   mkMali = name: buildInputs: stdenvNoCC.mkDerivation rec {
     pname = "libmali-xlnx";
-    version = "2023.2";
+    version = "2024.1";
 
     outputs = [ "out" "dev" ];
     src = fetchFromGitHub {

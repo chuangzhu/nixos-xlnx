@@ -2,13 +2,13 @@
 
 stdenv.mkDerivation (finalAttrs: {
   name = "xlnx-dp-modules-${kernel.version}-${finalAttrs.version}";
-  version = "2023.2";
+  version = "2024.1";
 
   src = fetchFromGitHub {
     owner = "Xilinx";
     repo = "dp-modules";
     rev = "xilinx_v${finalAttrs.version}";
-    hash = "sha256-lxo2HCk1vwLmy/Y3NRPohLzj6OZ3p0IlbjWK0M7pkkI=";
+    hash = "sha256-uWy83c7W0oebvqkhmwkXejFredM4ACO0Cb0jqfeA25Q=";
   };
 
   nativeBuildInputs = kernel.moduleBuildDependencies ++ [ ];

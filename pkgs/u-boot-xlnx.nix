@@ -6,13 +6,13 @@
 }:
 
 buildUBoot {
-  version = "2023.2";
+  version = "2024.1";
 
   src = fetchFromGitHub {
     owner = "Xilinx";
     repo = "u-boot-xlnx";
-    rev = "xilinx-v2023.2";
-    hash = "sha256-tSOw7+Pe3/JYIgrPYB6exPzfGrRTuolxXXTux80w/X8=";
+    rev = "xilinx-v2024.1";
+    hash = "sha256-G6GOcazwY4A/muG2hh4pj8i9jm536kYhirrOzcn77WE=";
   };
 
   defconfig = "xilinx_${platform}_virt_defconfig";
