@@ -12,14 +12,19 @@
 
 buildPythonPackage rec {
   pname = "lopper";
-  version = "unstable-2024-02-27";
+  version = "0-unstable-2024-07-19";
 
   src = fetchFromGitHub {
     owner = "devicetree-org";
     repo = "lopper";
-    rev = "bcd57e90e39d6df468cd7b0b756ca28cd24be4c1";
-    hash = "sha256-zBUyLcwYWJTWwmUIYjppSz47CMY4uSaKjUnA7gwJbK8=";
+    rev = "b4dd529fa00a85a432bdb2e2e5eb56d38b04477e";
+    hash = "sha256-KYrp7YOTVP0zM97cvs0LxRs6QF/FHfAlqlKIkzi7mpI=";
   };
+
+  postPatch = ''
+    substituteInPlace lopper/assists/zuplus_xppu_default.py --replace-fail elif: else:
+    substituteInPlace lopper/fdt.py --replace-fail '"-I", "dts"' '"-@", "-I", "dts"'
+  '';
 
   propagatedBuildInputs = [
     humanfriendly

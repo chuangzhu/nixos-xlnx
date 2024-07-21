@@ -32,9 +32,9 @@ if {![info exists platform]} {
 	exit 1
 }
 if {![info exists outdir]} {
-	set outdir [file join [file dirname $xsa] firmware]
+	set outdir [file join [file dirname $xsa] gendt]
 }
-file mkdir $outdir
+file mkdir $outdir/dt $outdir/sdt
 set xsabase [file rootname [file tail $xsa]]
 
 if {$platform == "zynqmp"} {

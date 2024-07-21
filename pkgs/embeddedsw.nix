@@ -1,9 +1,9 @@
 { lib
 , stdenv
 , fetchFromGitHub
-, python3
-, python-lopper
+, buildPackages
 , cmake
+, dtc
 , sdtDir ? null
 }:
 
@@ -15,7 +15,12 @@ let
     rev = "xilinx_v${version}";
     hash = "sha256-vh7tdHNd3miDZplTiRP8UWhQ/HLrjMcbQXCJjTO4p9o=";
   };
-  python = python3.withPackages (p: [ python-lopper p.pyyaml ]);
+  python = buildPackages.python3.withPackages (p: [
+    buildPackages.python-lopper
+    p.pyyaml
+    # ModuleNotFoundError: No module named 'distutils'
+    p.setuptools
+  ]);
 in
 
 {
@@ -23,21 +28,49 @@ in
     pname = "zynqmp-pmufw";
     inherit version src;
 
+    nativeBuildInputs = [
+      python
+      cmake
+      dtc
+      # [ERROR]: support application 'cpp' not found, exiting
+      (buildPackages.writeShellScriptBin "cpp" ''exec ${stdenv.cc.targetPrefix}cpp "''${@}"'')
+    ];
+
     postPatch = ''
-      patchShebangs lib/sw_apps/zynqmp_pmufw/misc/copy_bsp.sh
-      substituteInPlace lib/sw_apps/zynqmp_pmufw/misc/xparameters.h \
-        --replace "XPAR_MICROBLAZE_USE_BARREL 1" "XPAR_MICROBLAZE_USE_BARREL 0"
+      substituteInPlace cmake/toolchainfiles/microblaze-pmu_toolchain.cmake --replace-fail mb- ${stdenv.cc.targetPrefix}
+    '';
+    # postPatch = ''
+    #   patchShebangs lib/sw_apps/zynqmp_pmufw/misc/copy_bsp.sh
+    #   substituteInPlace lib/sw_apps/zynqmp_pmufw/misc/xparameters.h \
+    #     --replace "XPAR_MICROBLAZE_USE_BARREL 1" "XPAR_MICROBLAZE_USE_BARREL 0"
+    # '';
+
+    configurePhase = ''
+      runHook preConfigure
+      export ESW_REPO=$(readlink -f .)
+      export BSP_DIR=$(mktemp -d)
+      pushd $BSP_DIR
+      python $ESW_REPO/scripts/pyesw/create_bsp.py -t zynqmp_pmufw -s ${sdtDir}/system-top.dts -p psu_pmu_0
+      popd
+      # python $ESW_REPO/scripts/pyesw/build_bsp.py -d $BSP_DIR
+      export APP_DIR=$(mktemp -d)
+      pushd $APP_DIR
+      python $ESW_REPO/scripts/pyesw/create_app.py -t zynqmp_pmufw -d $BSP_DIR
+      popd
+      runHook postConfigure
     '';
 
-    makeFlags = [
-      "-C" "lib/sw_apps/zynqmp_pmufw/src"
-      "CC:=$(CC)" "COMPILER=$(CC)"
-      "AR:=$(AR)" "ARCHIVER=$(AR)"
-    ];
+    buildPhase = ''
+      runHook preBuild
+      pushd $APP_DIR
+      python $ESW_REPO/scripts/pyesw/build_app.py
+      popd
+      runHook postBuild
+    '';
 
     installPhase = ''
       runHook preInstall
-      install -Dm555 lib/sw_apps/zynqmp_pmufw/src/executable.elf -T $out/pmufw.elf
+      install -Dm555 $APP_DIR/build/zynqmp_pmufw.elf -t $out/
       runHook postInstall
     '';
     dontStrip = true;
@@ -55,42 +88,44 @@ in
     pname = "zynqmp-fsbl";
     inherit version src;
 
-    nativeBuildInputs = [ python cmake ];
+    nativeBuildInputs = [
+      python
+      cmake
+      dtc
+      # [ERROR]: support application 'cpp' not found, exiting
+      (buildPackages.writeShellScriptBin "cpp" ''exec ${stdenv.cc.targetPrefix}cpp "''${@}"'')
+    ];
 
-    postPatch = ''
-      patchShebangs lib/sw_apps/zynqmp_fsbl/misc/copy_bsp.sh
-    '';
+    # postPatch = ''
+    #   patchShebangs lib/sw_apps/zynqmp_fsbl/misc/copy_bsp.sh
+    # '';
 
     configurePhase = ''
       runHook preConfigure
       export ESW_REPO=$(readlink -f .)
       export BSP_DIR=$(mktemp -d)
       pushd $BSP_DIR
-      $CPP -nostdinc -undef -x assembler-with-cpp ${sdtDir}/system-top.dts -o combined.dts
-      # Compile and decompile it to get the __symbols__ label node
-      dtc -@ -I dts -O dtb combined.dts -o combined.dtb
-      dtc -I dtb -O dts combined.dtb -o with-symbols.dts
-      python $ESW_REPO/scripts/pyesw/create_bsp.py -t zynqmp_fsbl -s with-symbols.dts -p psu_cortexa53_0
+      python $ESW_REPO/scripts/pyesw/create_bsp.py -t zynqmp_fsbl -s ${sdtDir}/system-top.dts -p psu_cortexa53_0
       popd
-      python $ESW_REPO/scripts/pyesw/build_bsp.py -d $BSP_DIR
+      # python $ESW_REPO/scripts/pyesw/build_bsp.py -d $BSP_DIR
       export APP_DIR=$(mktemp -d)
       pushd $APP_DIR
-      python $ESW_REPO/scripts/pyesw/create_bsp.py -t zynqmp_fsbl -d $BSP_DIR
-      python $ESW_REPO/scripts/pyesw/build_bsp.py
+      python $ESW_REPO/scripts/pyesw/create_app.py -t zynqmp_fsbl -d $BSP_DIR
       popd
       runHook postConfigure
     '';
 
-    makeFlags = [
-      "-C" "lib/sw_apps/zynqmp_fsbl/src"
-      "CC:=$(CC)" "COMPILER=$(CC)"
-      "AR:=$(AR)" "ARCHIVER=$(AR)"
-      "CROSS_COMP=${stdenv.targetPlatform.config}"
-    ];
+    buildPhase = ''
+      runHook preBuild
+      pushd $APP_DIR
+      python $ESW_REPO/scripts/pyesw/build_app.py
+      popd
+      runHook postBuild
+    '';
 
     installPhase = ''
       runHook preInstall
-      install -Dm555 lib/sw_apps/zynqmp_fsbl/src/fsbl.elf -t $out/
+      install -Dm555 $APP_DIR/build/zynqmp_fsbl.elf -t $out/
       runHook postInstall
     '';
     dontStrip = true;
