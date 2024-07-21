@@ -56,7 +56,7 @@ subprocess.run(['dtc', '-@', '-I', 'dts', '-O', 'dtb',
 client = vitis.create_client()
 client.set_workspace(fsbl_workspace)
 platform_name = 'platform_fsbl'
-platform = client.create_platform_component(name=platform_name, hw=options.xsa, cpu='psu_cortexa53_0')
+platform = client.create_platform_component(name=platform_name, hw_design=options.xsa, cpu='psu_cortexa53_0')
 platform.retarget_fsbl(target_processor='psu_cortexa53_0')
 platform.build()
 
