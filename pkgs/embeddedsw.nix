@@ -3,7 +3,6 @@
 , fetchFromGitHub
 , buildPackages
 , cmake
-, dtc
 , sdtDir ? null
 }:
 
@@ -20,6 +19,7 @@ let
     p.pyyaml
     # ModuleNotFoundError: No module named 'distutils'
     p.setuptools
+    p.libfdt
   ]);
 in
 
@@ -28,22 +28,19 @@ in
     pname = "zynqmp-pmufw";
     inherit version src;
 
+    depsBuildBuild = [ buildPackages.stdenv.cc ];  # cpp
+
     nativeBuildInputs = [
       python
       cmake
-      dtc
-      # [ERROR]: support application 'cpp' not found, exiting
-      (buildPackages.writeShellScriptBin "cpp" ''exec ${stdenv.cc.targetPrefix}cpp "''${@}"'')
     ];
+
+    env.LOPPER_DTC_FLAGS = "-@";
 
     postPatch = ''
       substituteInPlace cmake/toolchainfiles/microblaze-pmu_toolchain.cmake --replace-fail mb- ${stdenv.cc.targetPrefix}
+
     '';
-    # postPatch = ''
-    #   patchShebangs lib/sw_apps/zynqmp_pmufw/misc/copy_bsp.sh
-    #   substituteInPlace lib/sw_apps/zynqmp_pmufw/misc/xparameters.h \
-    #     --replace "XPAR_MICROBLAZE_USE_BARREL 1" "XPAR_MICROBLAZE_USE_BARREL 0"
-    # '';
 
     configurePhase = ''
       runHook preConfigure
@@ -88,17 +85,14 @@ in
     pname = "zynqmp-fsbl";
     inherit version src;
 
+    depsBuildBuild = [ buildPackages.stdenv.cc ];  # cpp
+
     nativeBuildInputs = [
       python
       cmake
-      dtc
-      # [ERROR]: support application 'cpp' not found, exiting
-      (buildPackages.writeShellScriptBin "cpp" ''exec ${stdenv.cc.targetPrefix}cpp "''${@}"'')
     ];
 
-    # postPatch = ''
-    #   patchShebangs lib/sw_apps/zynqmp_fsbl/misc/copy_bsp.sh
-    # '';
+    env.LOPPER_DTC_FLAGS = "-@";
 
     configurePhase = ''
       runHook preConfigure

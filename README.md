@@ -1,6 +1,6 @@
 # nixos-xlnx
 
-NixOS and Nix packages for Xilinx Zynq 7000 SoCs and Zynq UltraScale+ MPSoCs. It's like PetaLinux, but instead of Yocto/OpenEmbedded/BitBake, it uses NixOS/Nixpkgs/Nix. Currently it targets Vivado 2022.2 and Nixpkgs unstable.
+NixOS and Nix packages for Xilinx Zynq 7000 SoCs and Zynq UltraScale+ MPSoCs. It's like PetaLinux, but instead of Yocto/OpenEmbedded/BitBake, it uses NixOS/Nixpkgs/Nix. Currently it targets Vivado 2024.1 and Nixpkgs unstable.
 
 This project isn't considered stable yet. Options may change anytime without noticing. Pin your inputs!
 
@@ -10,7 +10,7 @@ Since Vivado v2024.1, FSBL and PMUFW can be built from source using the system-d
 
 ## Build SD card images
 
-After finishing your hardware design in Vivado, choose File > Export > Export Hardware... Save the XSA file. Run [`vitisgenfw.tcl`](./vitisgenfw.tcl) to generate the bitstream, FSBL, PMUFW, and device-tree.
+After finishing your hardware design in Vivado, choose File > Export > Export Hardware... Save the XSA file. Run [`gendt.tcl`](./gendt.tcl) to generate the device-tree and system-device-tree.
 
 ```bash
 git clone https://github.com/Xilinx/device-tree-xlnx ~/.cache/device-tree-xlnx -b xilinx_v2024.1 --depth 1
@@ -58,7 +58,7 @@ Assuming you have [Nix flakes](https://nixos.wiki/wiki/Flakes) enabled, configur
 }
 ```
 
-Vivado only knows your PL/PS configuration *inside the SoC*. Therefore, the generated device-tre may not suit your *board* configuration. If you used PetaLinux before, you know that frequently you need to override properties, add/delete nodes in DTSIs in a special directory. In NixOS, we use device-tree overlays for that. Note that overlay DTSs are slightly different with a regular DTS:
+Vivado only knows your PL/PS configuration *inside the SoC*. Therefore, the generated device-tree may not suit your *board* configuration. If you used PetaLinux before, you know that frequently you need to override properties, add/delete nodes in DTSIs in a special directory. In NixOS, we use device-tree overlays for that. Note that overlay DTSs are slightly different with a regular DTS:
 
 ```c
 /dts-v1/;
@@ -130,7 +130,7 @@ Many AArch64 CPUs also supports AArch32, which provides backward compatibility w
 The Mali GPU built in ZynqMP isn't supported by Mesa yet. You have to use the closed source Mali OpenGL ES drivers:
 
 ```nix
-hardware.opengl.extraPackages = [ pkgs.libmali-xlnx.x11 ]; # Possible choices: wayland, x11, fbdev, headless
+hardware.graphics.extraPackages = [ pkgs.libmali-xlnx.x11 ]; # Possible choices: wayland, x11, fbdev, headless
 boot.extraModulePackages = [ config.boot.kernelPackages.mali-module-xlnx ];
 boot.blacklistedKernelModules = [ "lima" ];
 boot.kernelModules = [ "mali" ];
