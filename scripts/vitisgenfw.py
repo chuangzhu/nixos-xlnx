@@ -1,5 +1,5 @@
 #!/usr/bin/env -S vitis -s
-# LD_LIBRARY_PATH=/installation/path/to/Vitis/2023.2/tps/lnx64/cmake-3.24.2/libs/Ubuntu ~/vitisgenfw/vitis2023genfw.py --platform zynqmp /path/to/your/system.xsa
+# LD_LIBRARY_PATH=/installation/path/to/Vitis/2024.1/tps/lnx64/cmake-3.24.2/libs/Ubuntu ./vitisgenfw.py --platform zynqmp /path/to/your/system.xsa
 
 import vitis
 import datetime

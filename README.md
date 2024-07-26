@@ -6,16 +6,16 @@ This project isn't considered stable yet. Options may change anytime without not
 
 ## Limitations
 
-Since Vivado v2024.1, FSBL and PMUFW can be built from source using the system-device-tree flow. However, system-device-tree and device-tree generation from XSA still requires Vivado HSI to work. You need to run [`gendt.tcl`](./gendt.tcl) in XSCT to do that.
+Since Vivado v2024.1, FSBL and PMUFW can be built from source using the system-device-tree flow. However, system-device-tree and device-tree generation from XSA still requires Vivado HSI to work. You need to run [`scripts/gendt.tcl`](./scripts/gendt.tcl) in XSCT to do that.
 
 ## Build SD card images
 
-After finishing your hardware design in Vivado, choose File > Export > Export Hardware... Save the XSA file. Run [`gendt.tcl`](./gendt.tcl) to generate the device-tree and system-device-tree.
+After finishing your hardware design in Vivado, choose File > Export > Export Hardware... Save the XSA file. Run [`gendt.tcl`](./scripts/gendt.tcl) to generate the device-tree and system-device-tree.
 
 ```bash
 git clone https://github.com/Xilinx/device-tree-xlnx ~/.cache/device-tree-xlnx -b xilinx_v2024.1 --depth 1
 source /installation/path/to/Vivado/2024.1/settings64.sh
-./gendt.tcl vivado_exported.xsa ./output/directory/ -platform zynqmp  # Or "zynq" for Zynq 7000
+./scripts/gendt.tcl vivado_exported.xsa ./output/directory/ -platform zynqmp  # Or "zynq" for Zynq 7000
 ```
 
 Assuming you have [Nix flakes](https://nixos.wiki/wiki/Flakes) enabled, configure NixOS as follows:

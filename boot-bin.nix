@@ -52,7 +52,7 @@ in
       example = lib.literalExpression "./gendt/sdt/vivado_exported.bit";
       description = lib.mdDoc ''
         Path to bitstream extracted from XSA.
-        If you are using {command}`./gendt.tcl`, it is extracted to the `sdt` directory.
+        If you are using {command}`scripts/gendt.tcl`, it is extracted to the `sdt` directory.
       '';
     };
     fsbl = lib.mkOption {
@@ -68,7 +68,7 @@ in
       type = lib.types.nullOr lib.types.path;
       # defaultText = lib.literalMD "generated from {option}`hardware.zynq.sdtDir`";
       default = null;
-      # default = pkgs.pkgsCross.pmu.zynqmp-pmufw.override { inherit (cfg) sdtDir; } + "/pmufw.elf";
+      # default = if cfg.platform == "zynqmp" then pkgs.pkgsCross.microblazeel-embedded.zynqmp-pmufw.override { inherit (cfg) sdtDir; } + "/pmufw.elf" else null;
       # example = lib.literalExpression "./firmware/pmufw.elf";
       example = lib.literalExpression ''pmufw = nixos-xlnx.legacyPackages.aarch64-linux.pkgsCross.pmu.zynqmp-pmufw.override { inherit (config.hardware.zynq) sdtDir; } + "/zynqmp_pmufw.elf"'';
       description = lib.mdDoc ''
@@ -84,9 +84,9 @@ in
         bif = {
           zynqmp = ''
             the_ROM_image: {
-              [bootloader, destination_cpu=a53-0] ${config.hardware.zynq.fsbl}
-              [pmufw_image] ${config.hardware.zynq.pmufw}
-              [destination_device=pl] ${config.hardware.zynq.bitstream}
+              [bootloader, destination_cpu=a53-0] ${cfg.fsbl}
+              [pmufw_image] ${cfg.pmufw}
+              [destination_device=pl] ${cfg.bitstream}
               [destination_cpu=a53-0, exception_level=el-3, trustzone] ${pkgs.armTrustedFirmwareZynqMP}/bl31.elf
               [destination_cpu=a53-0, load=0x00100000] ${dtb}
               [destination_cpu=a53-0, exception_level=el-2] ${pkgs.ubootZynqMP}/u-boot.elf
@@ -94,19 +94,19 @@ in
           '';
           zynq = ''
             the_ROM_image: {
-              [bootloader] ${config.hardware.zynq.fsbl}
-              ${config.hardware.zynq.bitstream}
+              [bootloader] ${cfg.fsbl}
+              ${cfg.bitstream}
               ${pkgs.ubootZynq}/u-boot.elf
               [load=0x00100000] ${dtb}
             }
           '';
-        }.${config.hardware.zynq.platform};
+        }.${cfg.platform};
       in pkgs.runCommand "BOOT.BIN" { nativeBuildInputs = [ pkgs.xilinx-bootgen_2024_1 ]; } ''
-        bootgen -image ${pkgs.writeText "bootgen.bif" bif} -arch ${config.hardware.zynq.platform} -w -o $out
+        bootgen -image ${pkgs.writeText "bootgen.bif" bif} -arch ${cfg.platform} -w -o $out
       '';
       description = lib.mdDoc ''
         You can build BOOT.BIN without building the whole system using
-        {command}`nix build .#nixosConfigurations.<hostname>.config.hardware.zynq.boot-bin`
+        {command}`nix build .#nixosConfigurations.<hostname>.cfg.boot-bin`
       '';
     };
   };
@@ -114,7 +114,7 @@ in
   config = {
     assertions = [
       {
-        assertion = config.hardware.zynq.platform == "zynqmp" -> config.hardware.zynq.pmufw != null;
+        assertion = cfg.platform == "zynqmp" -> cfg.pmufw != null;
         message = "hardware.zynq.pmufw is not optional on ZynqMP.";
       }
     ];
