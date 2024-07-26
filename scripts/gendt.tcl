@@ -2,9 +2,9 @@
 
 proc usage {} {
 	puts "Generate device-tree and system-device-tree from an XSA file"
-	puts "This script should be ran using Xilinx Vitis xsct"
+	puts "This script should be ran using Xilinx Vivado or Vitis xsct"
 	puts ""
-	puts "$ source /installation/path/to/Vitis/2023.2/settings64.sh"
+	puts "$ source /installation/path/to/Vivado/2024.1/settings64.sh"
 	puts {$ xsct ./gendt.tcl -platform zynqmp <vivado_exported.xsa> [./output/directory/]}
 }
 

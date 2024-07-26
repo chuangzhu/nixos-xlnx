@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note
 diff --git a/drivers/hwmon/pmbus/tps544.c b/drivers/hwmon/pmbus/tps544.c
 index b91c77301369..22540d957a6b 100644
 --- a/drivers/hwmon/pmbus/tps544.c

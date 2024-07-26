@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note
 diff --git a/drivers/gpu/drm/xlnx/hdcp/xlnx_hdcp_tx.c b/drivers/gpu/drm/xlnx/hdcp/xlnx_hdcp_tx.c
 index 6f7611365414..fe6cf7b245d9 100644
 --- a/drivers/gpu/drm/xlnx/hdcp/xlnx_hdcp_tx.c

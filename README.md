@@ -95,7 +95,7 @@ ssh root@zynqmpboard.local xlnx-firmware-update
   - Even if you don't have an AArch64 builder, the build time for emulated builds is still acceptable given the small amount of packages you need to build.
 * For Zynq 7000, Nixpkgs doesn't provide a binary cache for armv7l-linux.
   - For native/emulated builds, you'll need to bootstrap from stage 0. For emulated builds, this is *really* time consuming.
-  - For armv7l-linux, cross builds and native/emulated have the same level of support Tier. But from my experience, native/emulated builds are more problematic due to limited userbase.
+  - For armv7l-linux, cross builds and native/emulated have the same level of support Tier. But in my experience, native/emulated builds are more problematic due to the limited userbase.
 
 In short, I recommend native/emulated builds for ZynqMP, and cross builds for Zynq 7000.
 
@@ -181,6 +181,6 @@ systemd.services.i3 = {
 
 ## Disclaimer
 
-Zynq, ZynqMP, Zynq UltraScale+ MPSoC, Vivado, Vitis, PetaLinux are trademarks of Xilinx, Inc. This project is not endorsed by nor affiliated with Xilinx, Inc.
+Zynq, ZynqMP, Zynq UltraScale+ MPSoC, Vivado, Vitis, PetaLinux are trademarks of Advanced Micro Devices, Inc. This project is not endorsed by nor affiliated with Advanced Micro Devices, Inc.
 
 MIT license only applies to the files in this repository, not to the packages built with it. Licenses for patches in this repository are otherwise specified.
