@@ -4,33 +4,7 @@
     overlays.default = import ./overlay.nix;
     legacyPackages.aarch64-linux = import nixpkgs {
       system = "aarch64-linux";
-      overlays = [
-        (final: prev: {
-          pkgsCross = prev.pkgsCross // {
-            pmu = import nixpkgs {
-              crossSystem = with nixpkgs.lib.systems.parse; {
-                # TODO: file a bug to Nixpkgs
-                # Nixpkgs parses this to config microblazeel-none-elf, GCC: Configuration microblazeel-none-elf not supported
-                system = "microblazeel-none";
-                # If set to microblazeel-xilinx-none-elf, GCC: Kernel `none' not known to work with OS `elf'.
-                config = "microblazeel-xilinx-elf";
-                # With the config above and without parsed.vendor below, Nixpkgs: Unknown vendor: xilinx
-                parsed = {
-                  _type = "system";
-                  cpu = cpuTypes.microblaze;
-                  vendor = { _type = "vendor"; name = "xilinx"; };
-                  kernel = kernels.none;
-                  abi = abis.elf;
-                };
-                libc = "newlib";
-              };
-              localSystem.system = "aarch64-linux";
-              overlays = [ self.overlays.default ]; # zynqmp-pmufw
-            };
-          };
-        })
-        self.overlays.default
-      ];
+      overlays = [ self.overlays.default ];
     };
     devShells.aarch64-linux.default = with self.legacyPackages.aarch64-linux; mkShell {
       nativeBuildInputs = [ ];

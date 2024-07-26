@@ -66,11 +66,11 @@ in
     };
     pmufw = lib.mkOption {
       type = lib.types.nullOr lib.types.path;
-      # defaultText = lib.literalMD "generated from {option}`hardware.zynq.sdtDir`";
-      default = null;
-      # default = if cfg.platform == "zynqmp" then pkgs.pkgsCross.microblazeel-embedded.zynqmp-pmufw.override { inherit (cfg) sdtDir; } + "/pmufw.elf" else null;
-      # example = lib.literalExpression "./firmware/pmufw.elf";
-      example = lib.literalExpression ''pmufw = nixos-xlnx.legacyPackages.aarch64-linux.pkgsCross.pmu.zynqmp-pmufw.override { inherit (config.hardware.zynq) sdtDir; } + "/zynqmp_pmufw.elf"'';
+      defaultText = lib.literalMD "generated from {option}`hardware.zynq.sdtDir`";
+      default = if cfg.platform == "zynqmp"
+        then pkgs.pkgsCross.microblaze-embedded.zynqmp-pmufw.override { inherit (cfg) sdtDir; } + "/zynqmp_pmufw.elf"
+        else null;
+      example = lib.literalExpression "./firmware/pmufw.elf";
       description = lib.mdDoc ''
         Path to Zynq MPSoC Platform Management Unit Firmware.
       '';

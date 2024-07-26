@@ -10,7 +10,7 @@ Since Vivado v2024.1, FSBL and PMUFW can be built from source using the system-d
 
 ## Build SD card images
 
-After finishing your hardware design in Vivado, choose File > Export > Export Hardware... Save the XSA file. Run [`gendt.tcl`](./scripts/gendt.tcl) to generate the device-tree and system-device-tree.
+After finishing your hardware design in Vivado, choose File > Export > Export Hardware... Save the XSA file. Run [`scripts/gendt.tcl`](./scripts/gendt.tcl) to generate the device-tree and system-device-tree.
 
 ```bash
 git clone https://github.com/Xilinx/device-tree-xlnx ~/.cache/device-tree-xlnx -b xilinx_v2024.1 --depth 1
@@ -37,7 +37,6 @@ Assuming you have [Nix flakes](https://nixos.wiki/wiki/Flakes) enabled, configur
             bitstream = ./output/directory/sdt/vivado_exported.bit;
             sdtDir = ./output/directory/sdt;
             dtDir = ./output/directory/dt;
-            pmufw = nixos-xlnx.legacyPackages.aarch64-linux.pkgsCross.pmu.zynqmp-pmufw.override { inherit (config.hardware.zynq) sdtDir; } + "/zynqmp_pmufw.elf";  # Remove for Zynq 7000
           };
           hardware.deviceTree.overlays = [
             { name = "system-user"; dtsFile = ./system-user.dts; }
