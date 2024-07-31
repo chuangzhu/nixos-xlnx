@@ -58,7 +58,7 @@ in
     fsbl = lib.mkOption {
       type = lib.types.path;
       defaultText = lib.literalMD "generated from {option}`hardware.zynq.sdtDir`";
-      default = pkgs.pkgsCross.aarch64-embedded.zynqmp-fsbl.override { inherit (cfg) sdtDir; } + "/zynqmp_fsbl.elf";
+      default = pkgs.pkgsCross.aarch64-embedded."${cfg.platform}-fsbl".override { inherit (cfg) sdtDir; } + "/${cfg.platform}_fsbl.elf";
       example = lib.literalExpression "./firmware/fsbl_a53.elf";
       description = lib.mdDoc ''
         Path to First Stage Boot Loader.
