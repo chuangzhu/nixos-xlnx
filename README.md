@@ -10,7 +10,7 @@ Since Vivado v2024.1, FSBL and PMUFW can be built from source using the system-d
 
 ## Build SD card images
 
-After finishing your hardware design in Vivado, choose File > Export > Export Hardware... Save the XSA file. Run [`scripts/gendt.tcl`](./scripts/gendt.tcl) to generate the device-tree and system-device-tree.
+After finishing your hardware design in Vivado, choose `File > Export > Export Hardware...`. Make sure you selected `Include bitstream`. Save the XSA file. Run [`scripts/gendt.tcl`](./scripts/gendt.tcl) to generate the device-tree and system-device-tree:
 
 ```bash
 git clone https://github.com/Xilinx/device-tree-xlnx ~/.cache/device-tree-xlnx -b xilinx_v2024.1 --depth 1
@@ -18,7 +18,7 @@ source /installation/path/to/Vivado/2024.1/settings64.sh
 ./scripts/gendt.tcl vivado_exported.xsa ./output/directory/ -platform zynqmp  # Or "zynq" for Zynq 7000
 ```
 
-Assuming you have [Nix flakes](https://nixos.wiki/wiki/Flakes) enabled, configure NixOS as follows:
+Assuming you have [Nix flakes](https://wiki.nixos.org/wiki/Flakes) enabled, configure NixOS as follows:
 
 ```nix
 {
@@ -57,7 +57,7 @@ Assuming you have [Nix flakes](https://nixos.wiki/wiki/Flakes) enabled, configur
 }
 ```
 
-Vivado only knows your PL/PS configuration *inside the SoC*. Therefore, the generated device-tree may not suit your *board* configuration. If you used PetaLinux before, you know that frequently you need to override properties, add/delete nodes in DTSIs in a special directory. In NixOS, we use device-tree overlays for that. Note that overlay DTSs are slightly different with a regular DTS:
+Vivado only knows your PL/PS configuration *inside the SoC*. Therefore, the generated device-tree may not suit your *board* configuration. If you used PetaLinux before, you know that frequently you need to override properties, add/delete nodes with DTSIs in a special directory. In NixOS, we use device-tree overlays for that. Note that overlay DTSs are slightly different with a regular DTS:
 
 ```c
 /dts-v1/;
