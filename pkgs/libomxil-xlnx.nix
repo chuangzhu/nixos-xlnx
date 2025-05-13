@@ -29,7 +29,7 @@ stdenv.mkDerivation rec {
     for f in $out/lib/*.so; do ln -s "$f" "$f".1; done
   '' + lib.optionalString (lib.versionAtLeast version "2023.2") ''
     install -Dm555 bin/omx_encoder.exe -T $out/bin/omx_encoder
-    install -Dm555 bin/omx_decoder.exe -T $out/bin/omx_encoder
+    install -Dm555 bin/omx_decoder.exe -T $out/bin/omx_decoder
   '' + lib.optionalString (lib.versionOlder version "2023.2") ''
     install -Dm555 bin/omx_{en,de}coder -t $out/bin/
   '' + ''
@@ -39,7 +39,11 @@ stdenv.mkDerivation rec {
   meta = with lib; {
     description = "OpenMAX Integration Layer implementation for Xilinx Zynq UltraScale+ VCU";
     homepage = "https://xilinx-wiki.atlassian.net/wiki/spaces/A/pages/18842546/Xilinx+Zynq+UltraScale+MPSoC+Video+Codec+Unit";
-    license = licenses.unfree; # Based on X11 license, but with two extra terms
+    license =
+      if lib.versionOlder version "2023.1" then
+        licenses.unfree # Based on X11 license, but with two extra terms
+      else
+        licenses.mit;
     sourceProvenance = with sourceTypes; [ fromSource ];
     platforms = platforms.linux;
     maintainers = with maintainers; [ chuangzhu ];
