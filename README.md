@@ -24,11 +24,10 @@ Assuming you have [Nix flakes](https://nixos.wiki/wiki/Flakes) enabled, configur
 
 ```nix
 {
-  inputs.nixos-xlnx.url = "github:chuangzhu/nixpkgs";
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+  inputs.nixos-xlnx.url = "github:chuangzhu/nixos-xlnx";
 
-  outputs = { self, nixpkgs, nixos-xlnx }: {
-    nixosConfigurations.zynqmpboard = nixpkgs.lib.nixosSystem {
+  outputs = { self, nixos-xlnx }: {
+    nixosConfigurations.zynqmpboard = nixos-xlnx.inputs.nixpkgs.lib.nixosSystem {
       modules = [
         nixos-xlnx.nixosModules.sd-image
 
