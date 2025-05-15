@@ -29,7 +29,18 @@ buildLinux (args // {
     USB_DWC3 = no;
     USB_CDNS_SUPPORT = no;
   } // lib.optionalAttrs stdenv.is32bit {
+    # Disable HDCP on Zynq7 to avoid hard-to-fix compilation errors
+    # These are only relevant to XC7Z045 and XC7Z100 anyway
+    # For other Zynq7 devices, use https://digilent.com/reference/programmable-logic/zybo-z7/demos/hdmi instead
+    # If you are using XC7Z045 or XC7Z100 and do want to use these features, please open an issue
     VIDEO_XILINX_HDMI21RXSS = no;  # FIXME: div64
+    VIDEO_XILINX_DPRXSS = no;
+    VIDEO_XILINX_HDCP1X_RX = no;
+    VIDEO_XILINX_HDCP2X_RX = no;
+    DRM_XLNX_HDCP = no;
+    DRM_XLNX_DPTX = no;
+    DRM_XLNX_HDMITX = no;
+    DRM_XLNX_MIXER = no;
   };
 
   kernelPatches = [

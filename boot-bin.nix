@@ -2,6 +2,21 @@
 
 let
   cfg = config.hardware.zynq;
+
+  # embeddedsw/cmake/toolchainfiles/cortexa9_toolchain.cmake
+  fsblCross = if cfg.platform == "zynqmp" then pkgs.aarch64-embedded else import pkgs.path {
+    localSystem.system = pkgs.stdenv.buildPlatform.system;
+    crossSystem = {
+      config = "arm-none-eabihf";
+      libc = "newlib";
+      gcc = {
+        cpu = "cortex-a9";
+        fpu = "vfpv3";
+        float-abi = "hard";
+      };
+    };
+    overlays = [ (import ./overlay.nix) ];
+  };
 in
 
 {
@@ -58,7 +73,7 @@ in
     fsbl = lib.mkOption {
       type = lib.types.path;
       defaultText = lib.literalMD "generated from {option}`hardware.zynq.sdtDir`";
-      default = pkgs.pkgsCross.aarch64-embedded."${cfg.platform}-fsbl".override { inherit (cfg) sdtDir; } + "/${cfg.platform}_fsbl.elf";
+      default = fsblCross."${cfg.platform}-fsbl".override { inherit (cfg) sdtDir; } + "/${cfg.platform}_fsbl.elf";
       example = lib.literalExpression "./firmware/fsbl_a53.elf";
       description = lib.mdDoc ''
         Path to First Stage Boot Loader.

@@ -98,11 +98,15 @@ in
   zynq-fsbl = mkEmbeddedswApp {
     template = "zynq_fsbl";
     proc = "ps7_cortexa9_0";
+    # arm-none-eabihf-
+    postPatch = ''
+      substituteInPlace cmake/toolchainfiles/cortexa9_toolchain.cmake --replace-fail arm-none-eabi- ${stdenv.cc.targetPrefix}
+    '';
     meta = with lib; {
       description = "Zynq-7000 First Stage Boot Loader";
       homepage = "https://xilinx-wiki.atlassian.net/wiki/spaces/A/pages/439124055/Zynq-7000+FSBL";
       license = licenses.mit;
-      platforms = [ "armv7l-none" ];
+      platforms = [ "arm-none" ];
       maintainer = with maintainers; [ chuangzhu ];
     };
   };

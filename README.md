@@ -22,7 +22,7 @@ Assuming you have [Nix flakes](https://wiki.nixos.org/wiki/Flakes) enabled, conf
 
 ```nix
 {
-  inputs.nixos-xlnx.url = "github:chuangzhu/nixpkgs";
+  inputs.nixos-xlnx.url = "github:chuangzhu/nixos-xlnx";
 
   outputs = { self, nixos-xlnx }: {
     nixosConfigurations.zynqmpboard = nixos-xlnx.inputs.nixpkgs.lib.nixosSystem {
