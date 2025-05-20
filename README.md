@@ -122,6 +122,104 @@ Many AArch64 CPUs also supports AArch32, which provides backward compatibility w
   - Check whether your `lscpu` says `CPU op-mode(s): 32-bit, 64-bit`.
   - Add `extra-platforms = armv7l-linux` to your `/etc/nix/nix.conf`. Restart `nix-daemon.service`.
 
+## Notes on Linux kernel
+
+### Adding out-of-tree modules
+
+```nix
+boot.extraModulePackages = [ config.boot.kernelPackages.xlnx-vcu-modules ];
+```
+
+List of out-of-tree Linux modules provided by Nixpkgs:
+
+```shell
+$ nix repl --file '<nixpkgs>'
+nix-repl> linuxPackages.<TAB>
+```
+
+List of out-of-tree Linux modules provided by this repo is under [pkgs/](./pkgs/).
+
+### Adding your own module
+
+Example Makefile:
+
+```makefile
+# module-name/Makefile
+
+ifeq ($(KERNELRELEASE),)
+
+KDIR ?= /lib/modules/$(shell uname -r)/build
+
+modules modules_install clean help:
+	$(MAKE) -C $(KDIR) M=$(shell pwd) $@
+
+else
+
+obj-m += module-name.o
+
+module-name-y := source_1.o
+module-name-y += source_2.o
+
+endif
+```
+
+Example Nix package:
+
+```nix
+# module-name/derivation.nix
+
+{ lib, stdenv, kernel, kmod }:
+
+stdenv.mkDerivation {
+  name = "module-name";
+
+  src = ./.;
+
+  hardeningDisable = [ "pic" ];
+
+  nativeBuildInputs = kernel.moduleBuildDependencies ++ [ kmod ];
+
+  makeFlags = kernel.makeFlags ++ [
+    "KDIR=${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
+  ];
+  installFlags = [ "INSTALL_MOD_PATH=$(out)" ];
+  installTargets = [ "modules_install" ];
+
+  enableParallelBuilding = true;
+}
+```
+
+Add the package to your system's config:
+
+```nix
+boot.extraModulePackages = [
+    (config.boot.kernelPackages.callPackage ./module-name/derivation.nix { })
+];
+```
+
+### Patching the kernel
+
+```nix
+boot.kernelPatches = [
+  { name = "my-patch"; patch = ./my-patch.patch; }
+];
+```
+
+### Modifying kernel config
+
+```nix
+boot.kernelPatches = [
+  {
+    name = "devmem";
+    patch = null;
+    extraStructuredConfig.STRICT_DEVMEM = lib.kernel.no;
+    extraStructuredConfig.IO_STRICT_DEVMEM = lib.kernel.no;
+  }
+];
+```
+
+`lib.kernel.yes`, `lib.kernel.no`, `lib.kernel.module`. Use `lib.mkForce lib.kernel.no` if it conflicts with `nixpkgs/pkgs/os-specific/linux/kernel/common-config.nix`.
+
 ## Known issues
 
 ### Applications that requires OpenGL not launching
@@ -178,6 +276,10 @@ systemd.services.i3 = {
 };
 ```
 </details>
+
+## Contributing
+
+Contributions are welcome! Just keep your pull requests focused on one feature at a time instead of contributing lots of changes at once. This makes reviews much easier. Thanks!
 
 ## Disclaimer
 
