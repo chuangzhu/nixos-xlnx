@@ -4,7 +4,7 @@ let
   cfg = config.hardware.zynq;
 
   # embeddedsw/cmake/toolchainfiles/cortexa9_toolchain.cmake
-  fsblCross = if cfg.platform == "zynqmp" then pkgs.aarch64-embedded else import pkgs.path {
+  fsblCross = if cfg.platform == "zynqmp" then pkgs.pkgsCross.aarch64-embedded else import pkgs.path {
     localSystem.system = pkgs.stdenv.buildPlatform.system;
     crossSystem = {
       config = "arm-none-eabihf";
