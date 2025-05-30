@@ -18,6 +18,8 @@ final: prev: {
     xlnx-dma-proxy = kprev.callPackage ./pkgs/dma-proxy.nix { };
     bperez77-xilinx-axidma = kprev.callPackage ./pkgs/xilinx-axidma.nix { };
     jacobfeder-axisfifo = kprev.callPackage ./pkgs/axisfifo.nix { };
+    digilent-hdmi = kprev.callPackage ./pkgs/digilent-hdmi.nix { };
+    digilent-dynclk = kprev.callPackage ./pkgs/digilent-dynclk.nix { };
   };
   xlnx-vcu-firmware = prev.callPackage ./pkgs/vcu-firmware.nix { };
 

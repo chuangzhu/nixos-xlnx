@@ -127,7 +127,7 @@ Many AArch64 CPUs also supports AArch32, which provides backward compatibility w
 ### Adding out-of-tree modules
 
 ```nix
-boot.extraModulePackages = [ config.boot.kernelPackages.xlnx-vcu-modules ];
+boot.extraModulePackages = [ config.boot.kernelPackages.digilent-hdmi ];
 ```
 
 List of out-of-tree Linux modules provided by Nixpkgs:
@@ -141,7 +141,10 @@ List of out-of-tree Linux modules provided by this repo is under [pkgs/](./pkgs/
 
 ### Adding your own module
 
+<details>
+<summary>
 Example Makefile:
+</summary>
 
 ```makefile
 # module-name/Makefile
@@ -162,8 +165,12 @@ module-name-y += source_2.o
 
 endif
 ```
+</details>
 
+<details>
+<summary>
 Example Nix package:
+</summary>
 
 ```nix
 # module-name/derivation.nix
@@ -188,6 +195,7 @@ stdenv.mkDerivation {
   enableParallelBuilding = true;
 }
 ```
+</details>
 
 Add the package to your system's config:
 
