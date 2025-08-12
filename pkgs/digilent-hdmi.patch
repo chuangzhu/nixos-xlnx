@@ -1,0 +1,37 @@
+--- a/digilent_hdmi.c
++++ b/digilent_hdmi.c
+@@ -12,6 +12,8 @@
+ #include <drm/drm_crtc.h>
+ #include <drm/drm_fourcc.h>
+ #include <drm/drm_probe_helper.h>
++#include <drm/drm_edid.h>
++#include <linux/i2c.h>
+ #include <linux/clk.h>
+ #include <linux/component.h>
+ #include <linux/device.h>
+@@ -116,14 +118,13 @@
+ 		
+ 		static void digilent_hdmi_connector_destroy(struct drm_connector *connector)
+ 	{
+-			drm_connector_unregister(connector);
+ 			drm_connector_cleanup(connector);
+ 		}
+ 		
+ 		static const struct drm_connector_funcs digilent_hdmi_connector_funcs = {
+ 				.detect = digilent_hdmi_detect,
+ 				.fill_modes = drm_helper_probe_single_connector_modes,
+-				.destroy = digilent_hdmi_connector_destroy,
++				.destroy = drm_connector_cleanup,
+ 				.atomic_duplicate_state	= drm_atomic_helper_connector_duplicate_state,
+ 				.atomic_destroy_state	= drm_atomic_helper_connector_destroy_state,
+ 				.reset			= drm_atomic_helper_connector_reset,
+@@ -248,7 +249,8 @@
+ {
+ 	struct digilent_hdmi *hdmi = dev_get_drvdata(dev);
+ 
+-	digilent_hdmi_disable(&hdmi->encoder);
++	drm_connector_cleanup(&hdmi->connector);
++	drm_encoder_cleanup(&hdmi->encoder);
+ }
+ 
+ static const struct component_ops digilent_hdmi_component_ops = {

@@ -10,13 +10,12 @@ stdenv.mkDerivation (finalAttrs: {
   };
 
   unpackPhase = ''
-    ln -sf ${finalAttrs.src} ${finalAttrs.src.name}
+    cp ${finalAttrs.src} ${finalAttrs.src.name}
+    chmod u+w ${finalAttrs.src.name}
     echo 'obj-m += digilent_hdmi.o' > Makefile
   '';
 
-  postPatch = ''
-    sed -i -e '1i#include <drm/drm_edid.h>' -e '1i#include <linux/i2c.h>' digilent_hdmi.c
-  '';
+  patches = [ ./digilent-hdmi.patch ];
 
   nativeBuildInputs = kernel.moduleBuildDependencies;
 
