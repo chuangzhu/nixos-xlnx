@@ -51,7 +51,7 @@ in
       type = lib.types.path;
       defaultText = lib.literalMD "built from {option}`hardware.zynq.dtDir`";
       default = pkgs.runCommandCC "system.dtb" { nativeBuildInputs = [ pkgs.dtc ]; } ''
-        ${pkgs.stdenv.cc.targetPrefix}cpp -nostdinc -undef -x assembler-with-cpp ${cfg.dtDir}/system-top.dts -o combined.dts
+        ${pkgs.stdenv.cc.targetPrefix}cpp -nostdinc -undef -x assembler-with-cpp ${cfg.dtDir}/system-top.dts -isystem ${cfg.dtDir}/include -o combined.dts
         dtc -@ -I dts -O dtb combined.dts -o $out
       '';
       example = lib.literalExpression "./firmware/system.dtb";
