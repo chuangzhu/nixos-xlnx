@@ -33,7 +33,7 @@ let
         p.libfdt
       ]))
       cmake
-    ] ++ lib.optionalString (lib.versionAtLeast xlnxVersion "2025.1") [
+    ] ++ lib.optionals (lib.versionAtLeast xlnxVersion "2025.1") [
       ninja
     ];
 
