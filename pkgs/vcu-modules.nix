@@ -1,14 +1,24 @@
-{ lib, stdenv, fetchFromGitHub, kernel, kmod }:
+{
+  lib,
+  stdenv,
+  fetchFromGitHub,
+  kernel,
+}:
 
 stdenv.mkDerivation (finalAttrs: {
   name = "xlnx-vcu-modules-${kernel.version}-${finalAttrs.version}";
-  version = "2024.1";
+  version = kernel.meta.xlnxVersion;
 
   src = fetchFromGitHub {
     owner = "Xilinx";
     repo = "vcu-modules";
     rev = "xilinx_v${finalAttrs.version}";
-    hash = "sha256-QR+ltPrgjcHY/nkNsXkhBsYeYwGQCOhzzzV1qtVjyzw=";
+    hash =
+      {
+        "2024.1" = "sha256-QR+ltPrgjcHY/nkNsXkhBsYeYwGQCOhzzzV1qtVjyzw=";
+        "2025.1" = "sha256-7BQKfPz10tC5jgy9aR89u/Kc15Ee/7sXSphtxhD0bNo=";
+      }
+      .${kernel.meta.xlnxVersion};
   };
 
   nativeBuildInputs = kernel.moduleBuildDependencies ++ [ ];

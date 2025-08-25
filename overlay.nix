@@ -1,12 +1,12 @@
-final: prev: {
+{ xlnxVersion ? "2025.1" }: final: prev: {
 
-  inherit (prev.callPackages ./pkgs/embeddedsw.nix { })
+  inherit (prev.callPackages ./pkgs/embeddedsw.nix { inherit xlnxVersion; })
     zynqmp-fsbl zynqmp-pmufw zynq-fsbl;
-  ubootZynqMP = prev.callPackage ./pkgs/u-boot-xlnx.nix { platform = "zynqmp"; };
-  ubootZynq = prev.callPackage ./pkgs/u-boot-xlnx.nix { platform = "zynq"; };
-  armTrustedFirmwareZynqMP = prev.callPackage ./pkgs/arm-trusted-firmware-xlnx.nix { };
-  linux_zynqmp = prev.callPackage ./pkgs/linux-xlnx { defconfig = "xilinx_defconfig"; kernelPatches = [ ]; };
-  linux_zynq = prev.callPackage ./pkgs/linux-xlnx { defconfig = "xilinx_zynq_defconfig"; kernelPatches = [ ]; };
+  ubootZynqMP = prev.callPackage ./pkgs/u-boot-xlnx.nix { inherit xlnxVersion; platform = "zynqmp"; };
+  ubootZynq = prev.callPackage ./pkgs/u-boot-xlnx.nix { inherit xlnxVersion; platform = "zynq"; };
+  armTrustedFirmwareZynqMP = prev.callPackage ./pkgs/arm-trusted-firmware-xlnx.nix { inherit xlnxVersion; };
+  linux_zynqmp = prev.callPackage ./pkgs/linux-xlnx { inherit xlnxVersion; defconfig = "xilinx_defconfig"; kernelPatches = [ ]; };
+  linux_zynq = prev.callPackage ./pkgs/linux-xlnx { inherit xlnxVersion; defconfig = "xilinx_zynq_defconfig"; kernelPatches = [ ]; };
   linuxPackages_zynqmp = (prev.linuxKernel.packagesFor final.linux_zynqmp).extend final.xlnxExtraLinuxPackages;
   linuxPackages_zynq = (prev.linuxKernel.packagesFor final.linux_zynq).extend final.xlnxExtraLinuxPackages;
 
@@ -21,14 +21,14 @@ final: prev: {
     digilent-hdmi = kprev.callPackage ./pkgs/digilent-hdmi.nix { };
     digilent-dynclk = kprev.callPackage ./pkgs/digilent-dynclk.nix { };
   };
-  xlnx-vcu-firmware = prev.callPackage ./pkgs/vcu-firmware.nix { };
+  xlnx-vcu-firmware = prev.callPackage ./pkgs/vcu-firmware.nix { inherit xlnxVersion; };
 
-  libmali-xlnx = prev.callPackages ./pkgs/libmali-xlnx.nix { };
-  libomxil-xlnx = prev.callPackage ./pkgs/libomxil-xlnx.nix { };
-  libvcu-xlnx = prev.callPackage ./pkgs/libvcu-xlnx.nix { };
+  libmali-xlnx = prev.callPackages ./pkgs/libmali-xlnx.nix { inherit xlnxVersion; };
+  libomxil-xlnx = prev.callPackage ./pkgs/libomxil-xlnx.nix { inherit xlnxVersion; };
+  libvcu-xlnx = prev.callPackage ./pkgs/libvcu-xlnx.nix { inherit xlnxVersion; };
 
   xorg = prev.xorg // {
-    xf86videoarmsoc = prev.callPackage ./pkgs/xf86-video-armsoc.nix { };
+    xf86videoarmsoc = prev.callPackage ./pkgs/xf86-video-armsoc.nix { inherit xlnxVersion; };
   };
 
   gst_all_1 = prev.gst_all_1 // {
@@ -40,14 +40,20 @@ final: prev: {
     });
   };
 
-  xilinx-bootgen_2024_1 = prev.xilinx-bootgen.overrideAttrs rec {
-    version = "xilinx_v2024.1";
+  xilinx-bootgen_nixosxlnx = prev.xilinx-bootgen.overrideAttrs rec {
+    version = "xilinx_v${xlnxVersion}";
     src = prev.fetchFromGitHub {
       owner = "Xilinx";
       repo = "bootgen";
       rev = version;
-      hash = "sha256-/gNAqjwfaD2NWxs2536XGv8g2IyRcQRHzgLcnCr4a34=";
+      hash = {
+        "2024.1" = "sha256-/gNAqjwfaD2NWxs2536XGv8g2IyRcQRHzgLcnCr4a34=";
+        "2025.1" = "sha256-VMmqNaptD6pEJDVSmmOvHcEl+5WUfwZMwxDoaiDPdxg=";
+      }.${xlnxVersion};
     };
+    installPhase = ''
+      install -Dm755 ${if prev.lib.versionAtLeast xlnxVersion "2025.1" then "build/bin/bootgen" else "bootgen"} $out/bin/bootgen
+    '';
   };
   python-lopper = prev.python3Packages.callPackage ./pkgs/lopper.nix { };
 }

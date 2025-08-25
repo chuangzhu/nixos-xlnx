@@ -3,21 +3,26 @@
 , fetchFromGitHub
 , buildPackages
 , cmake
+, ninja
 , sdtDir ? null
+, xlnxVersion ? "2025.1"
 }:
 
 let
-  version = "2024.1";
   src = fetchFromGitHub {
     owner = "Xilinx";
     repo = "embeddedsw";
-    rev = "xilinx_v${version}";
-    hash = "sha256-vh7tdHNd3miDZplTiRP8UWhQ/HLrjMcbQXCJjTO4p9o=";
+    rev = "xilinx_v${xlnxVersion}";
+    hash = {
+      "2024.1" = "sha256-vh7tdHNd3miDZplTiRP8UWhQ/HLrjMcbQXCJjTO4p9o=";
+      "2025.1" = "sha256-PK8u/9zP5mVAmq4CQDRrA0dH0F7rYwJY465+7FzSHjA=";
+    }.${xlnxVersion};
   };
 
-  mkEmbeddedswApp = { template, proc, ... } @ args: stdenv.mkDerivation ({
+  mkEmbeddedswApp = { template, proc, postPatch ? "", ... } @ args: stdenv.mkDerivation ({
     pname = template;
-    inherit version src;
+    version = xlnxVersion;
+    inherit src;
 
     nativeBuildInputs = [
       (buildPackages.python3.withPackages (p: [
@@ -28,10 +33,16 @@ let
         p.libfdt
       ]))
       cmake
+    ] ++ lib.optionalString (lib.versionAtLeast xlnxVersion "2025.1") [
+      ninja
     ];
 
     depsBuildBuild = [ buildPackages.stdenv.cc ];  # cpp
     env.LOPPER_DTC_FLAGS = "-@";
+
+    postPatch = lib.optionalString (lib.versionAtLeast xlnxVersion "2025.1") ''
+      substituteInPlace scripts/pyesw/repo.py --replace-fail "resolve_paths([shell_esw_repo])" 'resolve_paths({"set_repo_path": [shell_esw_repo]})'
+    '' + postPatch;
 
     configurePhase = ''
       runHook preConfigure
@@ -62,7 +73,7 @@ let
       runHook postInstall
     '';
     dontStrip = true;
-  } // builtins.removeAttrs args [ "template" "proc" ]);
+  } // builtins.removeAttrs args [ "template" "proc" "postPatch" ]);
 
 in
 

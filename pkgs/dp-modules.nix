@@ -1,14 +1,24 @@
-{ lib, stdenv, fetchFromGitHub, kernel, kmod }:
+{
+  lib,
+  stdenv,
+  fetchFromGitHub,
+  kernel,
+}:
 
 stdenv.mkDerivation (finalAttrs: {
   name = "xlnx-dp-modules-${kernel.version}-${finalAttrs.version}";
-  version = "2024.1";
+  version = kernel.meta.xlnxVersion;
 
   src = fetchFromGitHub {
     owner = "Xilinx";
     repo = "dp-modules";
     rev = "xilinx_v${finalAttrs.version}";
-    hash = "sha256-uWy83c7W0oebvqkhmwkXejFredM4ACO0Cb0jqfeA25Q=";
+    hash =
+      {
+        "2024.1" = "sha256-uWy83c7W0oebvqkhmwkXejFredM4ACO0Cb0jqfeA25Q=";
+        "2025.1" = "sha256-22nSUHptYGe35ueaDlOARQXqQ/Ux+Lqs3bqTVeAfovE=";
+      }
+      .${kernel.meta.xlnxVersion};
   };
 
   nativeBuildInputs = kernel.moduleBuildDependencies ++ [ ];

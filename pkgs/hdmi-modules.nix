@@ -1,14 +1,24 @@
-{ lib, stdenv, fetchFromGitHub, kernel, kmod }:
+{
+  lib,
+  stdenv,
+  fetchFromGitHub,
+  kernel,
+}:
 
 stdenv.mkDerivation (finalAttrs: {
   name = "xlnx-hdmi-modules-${kernel.version}-${finalAttrs.version}";
-  version = "2024.1";
+  version = kernel.meta.xlnxVersion;
 
   src = fetchFromGitHub {
     owner = "Xilinx";
     repo = "hdmi-modules";
     rev = "xilinx_v${finalAttrs.version}";
-    hash = "sha256-YZENLz7C54yVeqbIhMnEfnS1g0lTzu8Rr1GaKH7a0Z4=";
+    hash =
+      {
+        "2024.1" = "sha256-YZENLz7C54yVeqbIhMnEfnS1g0lTzu8Rr1GaKH7a0Z4=";
+        "2025.1" = "sha256-Q0H70ntbGLgCCa9cfyowJTlgkiwpjsBWhn346376nRE=";
+      }
+      .${kernel.meta.xlnxVersion};
   };
 
   nativeBuildInputs = kernel.moduleBuildDependencies ++ [ ];
@@ -20,7 +30,10 @@ stdenv.mkDerivation (finalAttrs: {
   # hdmi/xilinx_drm_hdmi.c #includes drivers/gpu/drm/xlnx/xlnx_bridge.h
   # But driver specific headers are removed in Nixpkgs' kernel builder
   # So a reference to kernel.src is needed
-  env.NIX_CFLAGS_COMPILE = toString [ "-isystem" "${kernel.src}/drivers" ];
+  env.NIX_CFLAGS_COMPILE = toString [
+    "-isystem"
+    "${kernel.src}/drivers"
+  ];
 
   installTargets = [ "modules_install" ];
   installFlags = [ "INSTALL_MOD_PATH=$(out)" ];

@@ -1,0 +1,51 @@
+# SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note
+# In file included from ../include/linux/string.h:390,
+#                  from ../include/linux/bitmap.h:13,
+#                  from ../include/linux/cpumask.h:12,
+#                  from ../arch/arm64/include/asm/cpufeature.h:27,
+#                  from ../arch/arm64/include/asm/ptrace.h:11,
+#                  from ../arch/arm64/include/asm/irqflags.h:9,
+#                  from ../include/linux/irqflags.h:18,
+#                  from ../include/linux/spinlock.h:59,
+#                  from ../include/drm/drm_crtc.h:28,
+#                  from ../include/drm/drm_atomic.h:31,
+#                  from ../drivers/gpu/drm/xlnx/xlnx_pl_disp.c:11:
+# In function 'sized_strscpy',
+#     inlined from 'xlnx_pl_disp_probe' at ../drivers/gpu/drm/xlnx/xlnx_pl_disp.c:615:2:
+# ../include/linux/fortify-string.h:293:17: error: call to '__write_overflow' declared with attribute error: detected write beyond size of object (1st parameter)
+#   293 |                 __write_overflow();
+#       |                 ^~~~~~~~~~~~~~~~~~
+# make[6]: *** [../scripts/Makefile.build:229: drivers/gpu/drm/xlnx/xlnx_pl_disp.o] Error 1
+# make[5]: *** [../scripts/Makefile.build:478: drivers/gpu/drm/xlnx] Error 2
+# make[4]: *** [../scripts/Makefile.build:478: drivers/gpu/drm] Error 2
+# make[3]: *** [../scripts/Makefile.build:478: drivers/gpu] Error 2
+# make[3]: *** Waiting for unfinished jobs....
+diff --git a/drivers/gpu/drm/xlnx/xlnx_pl_disp.c b/drivers/gpu/drm/xlnx/xlnx_pl_disp.c
+index 9c6c27ba60ba..92fb77eabab2 100644
+--- a/drivers/gpu/drm/xlnx/xlnx_pl_disp.c
++++ b/drivers/gpu/drm/xlnx/xlnx_pl_disp.c
+@@ -33,7 +33,6 @@
+ #include "xlnx_drv.h"
+ 
+ #define XLNX_PL_DISP_MAX_NUM_PLANES	3
+-#define XLNX_PL_DISP_VFMT_SIZE		5
+ /*
+  * Overview
+  * --------
+@@ -86,6 +85,7 @@ struct xlnx_pl_disp {
+ 	void *callback_param;
+ 	struct drm_device *drm;
+ 	u32 fmt;
++	u8 _termination;
+ 	struct xlnx_bridge *vtc_bridge;
+ 	u32 fid;
+ 	struct drm_property *fid_err_prop;
+@@ -612,7 +612,7 @@ static int xlnx_pl_disp_probe(struct platform_device *pdev)
+ 		goto err_dma;
+ 	}
+ 
+-	strscpy((char *)&xlnx_pl_disp->fmt, vformat, XLNX_PL_DISP_VFMT_SIZE);
++	xlnx_pl_disp->fmt = fourcc_code(vformat[0], vformat[1], vformat[2], vformat[3]);
+ 	info = drm_format_info(xlnx_pl_disp->fmt);
+ 	if (!info) {
+ 		dev_err(dev, "Invalid video format in dts\n");

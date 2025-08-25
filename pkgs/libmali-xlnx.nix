@@ -6,6 +6,7 @@
 , wayland
 , stdenv
 , xorg
+, xlnxVersion ? "2025.1"
 }:
 
 let
@@ -17,14 +18,17 @@ let
 
   mkMali = name: buildInputs: stdenvNoCC.mkDerivation rec {
     pname = "libmali-xlnx";
-    version = "2024.1";
+    version = xlnxVersion;
 
     outputs = [ "out" "dev" ];
     src = fetchFromGitHub {
       owner = "Xilinx";
       repo = "mali-userspace-binaries";
       rev = "xilinx_v${version}";
-      hash = "sha256-xUJM3BIqEeSVX6hgxRHCwdutS8zYM/1t9UVnv7EatZU=";
+      hash = {
+        "2024.1" = "sha256-xUJM3BIqEeSVX6hgxRHCwdutS8zYM/1t9UVnv7EatZU=";
+        "2025.1" = "sha256-VHLsMETEuZZslnscUDH858cwOPFxgqBEGPmNSXPuaSM=";
+      }.${xlnxVersion};
     };
 
     nativeBuildInputs = [ autoPatchelfHook ];

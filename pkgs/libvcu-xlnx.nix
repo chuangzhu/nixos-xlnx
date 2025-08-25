@@ -1,17 +1,21 @@
 { lib
 , stdenv
 , fetchFromGitHub
+, xlnxVersion ? "2025.1"
 }:
 
 stdenv.mkDerivation rec {
   pname = "libvcu-xlnx";
-  version = "2024.1";
+  version = xlnxVersion;
 
   src = fetchFromGitHub {
     owner = "Xilinx";
     repo = "vcu-ctrl-sw";
     rev = "xilinx_v${version}";
-    hash = "sha256-vLbzJktS7RFvPCpkNG07puSUxvd0yoe2R2rsltp77sE=";
+    hash = {
+      "2024.1" = "sha256-vLbzJktS7RFvPCpkNG07puSUxvd0yoe2R2rsltp77sE=";
+      "2025.1" = "sha256-/BVv4sXTxVhfJaHdDqaIYqR9Yjb2y/v8sR512nbE9uI=";
+    }.${xlnxVersion};
   };
 
   installTargets = [ "install_headers" ];

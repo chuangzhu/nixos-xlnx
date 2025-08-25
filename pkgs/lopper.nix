@@ -12,13 +12,13 @@
 
 buildPythonPackage {
   pname = "lopper";
-  version = "0-unstable-2024-07-19";
+  version = "0-unstable-2025-08-22";
 
   src = fetchFromGitHub {
     owner = "devicetree-org";
     repo = "lopper";
-    rev = "fcfad5150f98691e2a867c76d3f60f3631a3fd59";
-    hash = "sha256-3Jt47POX5avx1OzUhkniov3BLcrmQ+ivK/fORzcOT04=";
+    rev = "f93c309fd206525216d7a57eee010d698391efcf";
+    hash = "sha256-lbO2db35vjlLKnhmiDO1ydK0+eBu9gbmiR9Be5EC3Eo=";
   };
 
   propagatedBuildInputs = [

@@ -1,14 +1,17 @@
-{ lib, stdenvNoCC, fetchFromGitHub }:
+{ lib, stdenvNoCC, fetchFromGitHub, xlnxVersion ? "2025.1" }:
 
 stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "vcu-firmware";
-  version = "2024.1";
+  version = xlnxVersion;
 
   src = fetchFromGitHub {
     owner = "Xilinx";
     repo = "vcu-firmware";
     rev = "xilinx_v${finalAttrs.version}";
-    hash = "sha256-P0aYkARGULzoLHj5DAict6Hg0goeWgeRzWzV5/nHzAw=";
+    hash = {
+      "2024.1" = "sha256-P0aYkARGULzoLHj5DAict6Hg0goeWgeRzWzV5/nHzAw=";
+      "2025.1" = "sha256-zWjjTUjIo9Aus0ltRESmCcxQ2zGBCVgXMKDTssGfZqQ=";
+    }.${xlnxVersion};
   };
 
   installPhase = ''

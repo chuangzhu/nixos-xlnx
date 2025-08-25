@@ -3,13 +3,22 @@
 {
   imports = [ ./boot-bin.nix ];
 
+  options.hardware.zynq = {
+    xlnxVersion = lib.mkOption {
+      type = lib.types.enum [ "2024.1" "2025.1" ];
+      description = lib.mdDoc ''
+        Xilinx Vivado Design Suite version of your hardware design.
+      '';
+    };
+  };
+
   config = {
     boot.loader = {
       grub.enable = lib.mkDefault false;
       generic-extlinux-compatible.enable = lib.mkDefault true;
     };
 
-    nixpkgs.overlays = [ (import ./overlay.nix) ];
+    nixpkgs.overlays = [ (import ./overlay.nix { inherit (config.hardware.zynq) xlnxVersion; }) ];
 
     boot.kernelPackages = lib.mkDefault pkgs."linuxPackages_${config.hardware.zynq.platform}";
 

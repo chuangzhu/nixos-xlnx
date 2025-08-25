@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, fetchpatch, kernel }:
+{ lib, stdenv, fetchurl, fetchpatch, kernel, xlnxVersion ? "2025.1" }:
 
 stdenv.mkDerivation (finalAttrs: {
   name = "mali-modules-${kernel.version}-${finalAttrs.version}";
@@ -10,12 +10,12 @@ stdenv.mkDerivation (finalAttrs: {
   };
   sourceRoot = "DX910-SW-99002-${finalAttrs.version}/driver/src/devicedrv/mali";
 
-  patches = let
+  patches = (let
     fetchYoctoPatch = file: hash: fetchurl {
       url = "https://git.yoctoproject.org/meta-xilinx/plain/meta-xilinx-core/recipes-graphics/mali/kernel-module-mali/${file}.patch?h=ff9288d64f0b44b88c00ecb0862caa964d984fa9";
       inherit hash;
     };
-  in[
+  in [
     (fetchYoctoPatch "0001-Change-Makefile-to-be-compatible-with-Yocto" "sha256-oZY7437iXskpLwNUudpx7xded2k0DMBTHeeIPCXgKxw=")
     (fetchYoctoPatch "0002-staging-mali-r8p0-01rel0-Add-the-ZYNQ-ZYNQMP-platfor" "sha256-FMRNXNDf54/7mXVRojgfBSeMx6kiyA6ka/SiwjJul+I=")
     (fetchYoctoPatch "0003-staging-mali-r8p0-01rel0-Remove-unused-trace-macros" "sha256-gz41V0S9GtaVcSg9YctaGX6WzdNMBAB4LI3NFcFdY78=")
@@ -42,6 +42,11 @@ stdenv.mkDerivation (finalAttrs: {
     (fetchYoctoPatch "0027-Updated-clock-name-and-structure-to-match-LIMA-drive" "sha256-z6yHGkokFnTsi12FNWOky3xZGdJXpbZIrxz53ZBoTS0=")
     (fetchYoctoPatch "0028-Replace-vma-vm_flags-direct-modifications-with-modif" "sha256-BvYaYe1VSzNiY1RPVJWW0fbjK7kAJv3B/tFcxBg89CA=")
     (fetchYoctoPatch "0029-Fixed-buildpath-QA-warning" "sha256-O5cG2zXmExocea5yZL6ZoLL975uNWpBnBRLBB3zAKEk=")
+  ]) ++ lib.optionals (lib.versionAtLeast xlnxVersion "2025.1") [
+    (fetchurl {
+      url = "https://github.com/Xilinx/meta-xilinx/raw/936845b97ab1ff035108f219f4e7cfef5401eb02/meta-xilinx-mali400/recipes-graphics/mali/kernel-module-mali/0030-Update-driver-to-make-it-compatible-with-6.12-kernel.patch";
+      hash = "sha256-TbzN1KWEYxo/MJegMvfS2MXXwG/b9asXqYJmptGNxMU=";
+    })
   ];
 
   nativeBuildInputs = kernel.moduleBuildDependencies ++ [ ];

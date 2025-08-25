@@ -2,17 +2,21 @@
 , stdenv
 , fetchFromGitHub
 , libvcu-xlnx
+, xlnxVersion ? "2025.1"
 }:
 
 stdenv.mkDerivation rec {
   pname = "libomxil-xlnx";
-  version = "2024.1";
+  version = xlnxVersion;
 
   src = fetchFromGitHub {
     owner = "Xilinx";
     repo = "vcu-omx-il";
     rev = "xilinx_v${version}";
-    hash = "sha256-mqD0F2V/kh5NzpkniHcCcclJ7Suzgn67+Kf4UAQAK7E=";
+    hash = {
+      "2024.1" = "sha256-mqD0F2V/kh5NzpkniHcCcclJ7Suzgn67+Kf4UAQAK7E=";
+      "2025.1" = "sha256-lgmuEVWMZuR1ySu4ypvahDcBlwOVOAcChQOxyZg9j5A=";
+    }.${xlnxVersion};
   };
 
   postPatch = ''

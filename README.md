@@ -33,6 +33,7 @@ Assuming you have [Nix flakes](https://wiki.nixos.org/wiki/Flakes) enabled, conf
           nixpkgs.hostPlatform = "aarch64-linux";  # Or "armv7l-linux" for Zynq 7000
           # nixpkgs.buildPlatform = "x86_64-linux";
           hardware.zynq = {
+            xlnxVersion = "2024.1";
             platform = "zynqmp";  # Or "zynq" for Zynq 7000
             bitstream = ./output/directory/sdt/vivado_exported.bit;
             sdtDir = ./output/directory/sdt;

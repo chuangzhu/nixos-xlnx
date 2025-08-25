@@ -15,7 +15,7 @@ let
         float-abi = "hard";
       };
     };
-    overlays = [ (import ./overlay.nix) ];
+    overlays = [ (import ./overlay.nix { inherit (config.hardware.zynq) xlnxVersion; }) ];
   };
 in
 
@@ -116,7 +116,7 @@ in
             }
           '';
         }.${cfg.platform};
-      in pkgs.runCommand "BOOT.BIN" { nativeBuildInputs = [ pkgs.xilinx-bootgen_2024_1 ]; } ''
+      in pkgs.runCommand "BOOT.BIN" { nativeBuildInputs = [ pkgs.xilinx-bootgen_nixosxlnx ]; } ''
         bootgen -image ${pkgs.writeText "bootgen.bif" bif} -arch ${cfg.platform} -w -o $out
       '';
       description = lib.mdDoc ''
