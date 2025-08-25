@@ -45,14 +45,19 @@ if {$platform == "zynqmp"} {
 	puts "Platform should be either zynq or zynqmp!"
 }
 
-if {![file exists $env(HOME)/.cache/device-tree-xlnx]} {
-	puts "Please clone https://github.com/Xilinx/device-tree-xlnx/ to ~/.cache/device-tree-xlnx!"
+if {$::tcl_platform(platform) == "windows"} {
+	set dtg $env(LOCALAPPDATA)/device-tree-xlnx
+} else {
+	set dtg $env(HOME)/.cache/device-tree-xlnx
+}
+if {![file exists $dtg]} {
+	puts "Please clone https://github.com/Xilinx/device-tree-xlnx/ to $dtg!"
 	exit 2
 }
 
 # https://xilinx-wiki.atlassian.net/wiki/spaces/A/pages/18842279/Build+Device+Tree+Blob
 hsi open_hw_design $xsa
-hsi set_repo_path $env(HOME)/.cache/device-tree-xlnx
+hsi set_repo_path $dtg
 set procs [hsi get_cells -hier -filter {IP_TYPE==PROCESSOR}]
 puts "List of processors found in XSA is $procs"
 hsi create_sw_design device-tree -os device_tree -proc $arch
