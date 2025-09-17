@@ -4,6 +4,7 @@
 , buildPackages
 , cmake
 , ninja
+, linkFarm
 , sdtDir ? null
 , xlnxVersion ? "2025.1"
 }:
@@ -18,6 +19,22 @@ let
       "2025.1" = "sha256-PK8u/9zP5mVAmq4CQDRrA0dH0F7rYwJY465+7FzSHjA=";
     }.${xlnxVersion};
   };
+
+  libmetal = fetchFromGitHub {
+    owner = "Xilinx"; # OpenAMP
+    repo = "libmetal";
+    rev = "xilinx_v${xlnxVersion}";
+    hash = {
+      "2024.1" = "sha256-GNOVRbn5MfwUKpZl4cVUBAykH6YZjTXNi1Az7dj5Ez8=";
+      "2025.1" = "sha256-gzTIM8rGpKH0pPaJx+8/PDII+ZFCA0DiVaOagN30Gy4=";
+    }.${xlnxVersion};
+  };
+
+  # XILINX_VITIS
+  vitisDepsDir = linkFarm "embeddedsw-vitis-deps" [
+    { name = "data/libmetal"; path = libmetal; }
+    # { name = "data/open-amp"; path = openamp; }
+  ];
 
   mkEmbeddedswApp = { template, proc, postPatch ? "", ... } @ args: stdenv.mkDerivation ({
     pname = template;
@@ -39,6 +56,7 @@ let
 
     depsBuildBuild = [ buildPackages.stdenv.cc ];  # cpp
     env.LOPPER_DTC_FLAGS = "-@";
+    env.XILINX_VITIS = vitisDepsDir;
 
     postPatch = lib.optionalString (lib.versionAtLeast xlnxVersion "2025.1") ''
       substituteInPlace scripts/pyesw/repo.py --replace-fail "resolve_paths([shell_esw_repo])" 'resolve_paths({"set_repo_path": [shell_esw_repo]})'
