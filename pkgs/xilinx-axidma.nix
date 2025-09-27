@@ -1,8 +1,22 @@
-{ lib, stdenv, fetchFromGitHub, fetchpatch, kernel, which, doxygen }:
+{
+  lib,
+  stdenv,
+  fetchFromGitHub,
+  fetchpatch,
+  kernel,
+  which,
+  doxygen,
+}:
 
 stdenv.mkDerivation {
   name = "xilinx_axidma";
-  outputs = [ "out" "bin" "dev" "devdoc" "drivers" ];
+  outputs = [
+    "out"
+    "bin"
+    "dev"
+    "devdoc"
+    "drivers"
+  ];
 
   src = fetchFromGitHub {
     owner = "bperez77";
@@ -12,12 +26,15 @@ stdenv.mkDerivation {
   };
   patches = [
     (fetchpatch {
-      url = "https://github.com/andrewvoznytsa/xilinx_axidma/commit/a87240b08b61f5c8f8964318f73d249adcc6e9ce.patch";
-      hash = "sha256-pNuIPj9s5R0P7x65+6+22dg9VZLBRegyJe94g6KmPU4=";
+      url = "https://github.com/neutralinsomniac/xilinx_axidma/commit/2bdc88cf4acd25a1323385a78745f4bb1b4adaf2.patch";
+      hash = "sha256-qYRR1tSqcvdHfcUooKznN+yyGmbTKgn0RDyyPKl0Z/I=";
     })
   ];
 
-  nativeBuildInputs = kernel.moduleBuildDependencies ++ [ which doxygen ];
+  nativeBuildInputs = kernel.moduleBuildDependencies ++ [
+    which
+    doxygen
+  ];
   makeFlags = kernel.makeFlags ++ [
     "KBUILD_DIR=${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
   ];
@@ -49,7 +66,10 @@ stdenv.mkDerivation {
   meta = with lib; {
     description = "Zero-copy Linux driver and userspace interface library for Xilinx's AXI DMA and VDMA IP blocks";
     homepage = "https://github.com/bperez77/xilinx_axidma";
-    license = with licenses; [ gpl2Only mit ];
+    license = with licenses; [
+      gpl2Only
+      mit
+    ];
     platforms = platforms.linux;
     maintainer = with maintainers; [ chuangzhu ];
   };
