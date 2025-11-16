@@ -29,6 +29,10 @@ stdenv.mkDerivation {
       url = "https://github.com/neutralinsomniac/xilinx_axidma/commit/2bdc88cf4acd25a1323385a78745f4bb1b4adaf2.patch";
       hash = "sha256-qYRR1tSqcvdHfcUooKznN+yyGmbTKgn0RDyyPKl0Z/I=";
     })
+    (fetchpatch {
+      url = "https://github.com/chuangzhu/xilinx_axidma/commit/d97ddd12bac89d98b836c624f603775f29594d44.patch";
+      hash = "sha256-Y7ZZpqMchgM371KKJ/p+RQq3jY3ncut9HpW6H7S+kSk=";
+    })
   ];
 
   nativeBuildInputs = kernel.moduleBuildDependencies ++ [
