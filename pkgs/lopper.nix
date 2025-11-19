@@ -2,6 +2,7 @@
   lib,
   buildPythonPackage,
   fetchFromGitHub,
+  setuptools,
   humanfriendly,
   configparser,
   libfdt,
@@ -32,6 +33,8 @@ buildPythonPackage {
     packaging
   ];
 
+  pyproject = true;
+  build-system = [ setuptools ];
   pythonImportsCheck = [ "lopper" ];
 
   doCheck = false;
