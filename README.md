@@ -8,9 +8,9 @@ Status: **ALPHA**. Options may change anytime without noticing. Pin your inputs!
 
 |                                        | Vivado 2025.1 | Vivado 2024.2 | Vivado 2024.1 | Vivado 2023.2 | Vivado 2023.1 | Vivado 2022.2 |
 |----------------------------------------|---------------|---------------|---------------|---------------|---------------|---------------|
-| nixos-25.11 (upcoming)                 | ❔            | ➖            | ❔            |               | ➖            |               |
-| nixos-25.05                            | ❔            | ➖            | ❔            |               | ➖            |               |
-| nixos-24.11                            | ❔            | ➖            | ❔            |               | ➖            |               |
+| nixos-25.11 (upcoming)                 | ❔            | ➖            | ❔            |               |               |               |
+| nixos-25.05                            | ❔            | ➖            | ❔            |               |               |               |
+| nixos-24.11                            | ❔            | ➖            | ❔            |               |               |               |
 | nixos-unstable [20240719.1d9c2c9b3e71] | ✅            |               | ✅            |               |               |               |
 | nixos-24.05                            | ❔            | ➖            | ❔            | ❔            | ➖            | ❔            |
 | nixos-unstable [20230704.78419edadf0f] |               |               |               | [2023]        |               | [2022]        |
@@ -26,7 +26,7 @@ Status: **ALPHA**. Options may change anytime without noticing. Pin your inputs!
 [2023]: https://github.com/chuangzhu/nixos-xlnx/tree/2023
 [2022]: https://github.com/chuangzhu/nixos-xlnx/tree/2023
 
-Since Vivado v2024.1, FSBL and PMUFW can be built from source using the system-device-tree flow. However, system-device-tree and device-tree generation from XSA still requires Vivado HSI to work. You need to run [`scripts/gendt.tcl`](./scripts/gendt.tcl) in XSCT to do that.
+Since Vivado 2024.1, FSBL and PMUFW can be built from source using the system-device-tree flow. However, system-device-tree and device-tree generation from XSA still requires Vivado HSI to work. You need to run [`scripts/gendt.tcl`](./scripts/gendt.tcl) in XSCT to do that.
 
 ## Build SD card images
 
