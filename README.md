@@ -1,10 +1,30 @@
 # nixos-xlnx
 
-NixOS and Nix packages for Xilinx Zynq 7000 SoCs and Zynq UltraScale+ MPSoCs. It's like PetaLinux, but instead of Yocto/OpenEmbedded/BitBake, it uses NixOS/Nixpkgs/Nix. Currently it targets Vivado 2024.1 and Nixpkgs unstable.
+NixOS and Nix packages for Xilinx Zynq 7000 SoCs and Zynq UltraScale+ MPSoCs. It's like PetaLinux, but instead of Yocto/OpenEmbedded/BitBake, it uses NixOS/Nixpkgs/Nix.
 
-This project isn't considered stable yet. Options may change anytime without noticing. Pin your inputs!
+Status: **ALPHA**. Options may change anytime without noticing. Pin your inputs!
 
-## Limitations
+## Support matrix
+
+|                                        | Vivado 2025.1 | Vivado 2024.2 | Vivado 2024.1 | Vivado 2023.2 | Vivado 2023.1 | Vivado 2022.2 |
+|----------------------------------------|---------------|---------------|---------------|---------------|---------------|---------------|
+| nixos-25.11 (upcoming)                 | ❔            | ➖            | ❔            |               | ➖            |               |
+| nixos-25.05                            | ❔            | ➖            | ❔            |               | ➖            |               |
+| nixos-24.11                            | ❔            | ➖            | ❔            |               | ➖            |               |
+| nixos-unstable [20240719.1d9c2c9b3e71] | ✅            |               | ✅            |               |               |               |
+| nixos-24.05                            | ❔            | ➖            | ❔            | ❔            | ➖            | ❔            |
+| nixos-unstable [20230704.78419edadf0f] |               |               |               | [2023]        |               | [2022]        |
+
+* ✅: Supported and tested
+* ❔: Untested (TODO)
+* ➖: Not supported (yet)
+* ❌: Known bad
+* ` `: Not planned
+
+[20240719.1d9c2c9b3e71]: https://github.com/NixOS/nixpkgs/tree/1d9c2c9b3e71b9ee663d11c5d298727dace8d374
+[20230704.78419edadf0f]: https://github.com/NixOS/nixpkgs/tree/78419edadf0fabbe5618643bd850b2f2198ed060
+[2023]: https://github.com/chuangzhu/nixos-xlnx/tree/2023
+[2022]: https://github.com/chuangzhu/nixos-xlnx/tree/2023
 
 Since Vivado v2024.1, FSBL and PMUFW can be built from source using the system-device-tree flow. However, system-device-tree and device-tree generation from XSA still requires Vivado HSI to work. You need to run [`scripts/gendt.tcl`](./scripts/gendt.tcl) in XSCT to do that.
 
