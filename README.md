@@ -3,6 +3,7 @@
 NixOS and Nix packages for Xilinx Zynq 7000 SoCs and Zynq UltraScale+ MPSoCs. It's like PetaLinux, but instead of Yocto/OpenEmbedded/BitBake, it uses NixOS/Nixpkgs/Nix.
 
 Status: **ALPHA**. Options may change anytime without noticing. Pin your inputs!
+<!-- Status: **BETA**. Breaking changes will be documented in [CHANGELOG.md](./CHANGELOG.md). -->
 
 ## Support matrix
 
@@ -53,7 +54,7 @@ Assuming you have [Nix flakes](https://wiki.nixos.org/wiki/Flakes) enabled, conf
           nixpkgs.hostPlatform = "aarch64-linux";  # Or "armv7l-linux" for Zynq 7000
           # nixpkgs.buildPlatform = "x86_64-linux";
           hardware.zynq = {
-            xlnxVersion = "2024.1";
+            xlnxVersion = "2024.1";  # Or "2025.1"
             platform = "zynqmp";  # Or "zynq" for Zynq 7000
             bitstream = ./output/directory/sdt/vivado_exported.bit;
             sdtDir = ./output/directory/sdt;
