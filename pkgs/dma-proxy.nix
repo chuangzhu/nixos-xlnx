@@ -1,4 +1,9 @@
-{ lib, stdenv, fetchFromGitHub, kernel }:
+{
+  lib,
+  stdenv,
+  fetchFromGitHub,
+  kernel,
+}:
 
 stdenv.mkDerivation rec {
   pname = "dma-proxy";
@@ -33,7 +38,10 @@ stdenv.mkDerivation rec {
   meta = with lib; {
     description = "Xilinx's prototype application for Linux userspace DMA";
     homepage = "https://xilinx-wiki.atlassian.net/wiki/spaces/A/pages/1027702787/Linux+DMA+From+User+Space+2.0";
-    license = with licenses; [ gpl2Only asl20 ];
+    license = with licenses; [
+      gpl2Only
+      asl20
+    ];
     platforms = platforms.linux;
     maintainer = with maintainers; [ chuangzhu ];
   };

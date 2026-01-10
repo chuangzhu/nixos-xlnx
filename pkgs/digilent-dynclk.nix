@@ -1,4 +1,9 @@
-{ lib, stdenv, fetchurl, kernel }:
+{
+  lib,
+  stdenv,
+  fetchurl,
+  kernel,
+}:
 
 stdenv.mkDerivation (finalAttrs: {
   name = "digilent-dynclk-${kernel.version}-${finalAttrs.version}";

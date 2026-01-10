@@ -1,4 +1,9 @@
-{ lib, stdenv, fetchFromGitHub, kernel }:
+{
+  lib,
+  stdenv,
+  fetchFromGitHub,
+  kernel,
+}:
 
 stdenv.mkDerivation rec {
   pname = "axisfifo";
@@ -33,7 +38,10 @@ stdenv.mkDerivation rec {
   meta = with lib; {
     description = "Zynq SoC Linux kernel driver for Xilinx AXI-Stream FIFO IP";
     homepage = "https://support.xilinx.com/s/question/0D52E00006hpglYSAQ/axistream-fifo-linux-driver";
-    license = with licenses; [ gpl2Only gpl3Only ];
+    license = with licenses; [
+      gpl2Only
+      gpl3Only
+    ];
     platforms = platforms.linux;
     maintainer = with maintainers; [ chuangzhu ];
   };

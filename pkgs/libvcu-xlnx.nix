@@ -1,7 +1,8 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, xlnxVersion ? "2025.1"
+{
+  lib,
+  stdenv,
+  fetchFromGitHub,
+  xlnxVersion ? "2025.1",
 }:
 
 stdenv.mkDerivation rec {
@@ -12,23 +13,27 @@ stdenv.mkDerivation rec {
     owner = "Xilinx";
     repo = "vcu-ctrl-sw";
     rev = "xilinx_v${version}";
-    hash = {
-      "2024.1" = "sha256-vLbzJktS7RFvPCpkNG07puSUxvd0yoe2R2rsltp77sE=";
-      "2025.1" = "sha256-/BVv4sXTxVhfJaHdDqaIYqR9Yjb2y/v8sR512nbE9uI=";
-    }.${xlnxVersion};
+    hash =
+      {
+        "2024.1" = "sha256-vLbzJktS7RFvPCpkNG07puSUxvd0yoe2R2rsltp77sE=";
+        "2025.1" = "sha256-/BVv4sXTxVhfJaHdDqaIYqR9Yjb2y/v8sR512nbE9uI=";
+      }
+      .${xlnxVersion};
   };
 
   installTargets = [ "install_headers" ];
   installFlags = [
     "PREFIX=$(out)"
-  ] ++ lib.optionals (lib.versionAtLeast version "2023.2") [
+  ]
+  ++ lib.optionals (lib.versionAtLeast version "2023.2") [
     "INSTALL_PATH=$(out)/bin"
   ];
 
   postInstall = ''
     install -Dm755 bin/liballegro_{en,de}code.so -t $out/lib/
     for f in $out/lib/*.so; do ln -s "$f" "$f".0; done
-  '' + lib.optionalString (lib.versionOlder version "2023.2") ''
+  ''
+  + lib.optionalString (lib.versionOlder version "2023.2") ''
     install -Dm755 bin/ctrlsw_{en,de}coder -t $out/bin/
   '';
 

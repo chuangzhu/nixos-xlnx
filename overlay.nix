@@ -1,16 +1,38 @@
-{ xlnxVersion ? "2025.1" }: final: prev: {
+{
+  xlnxVersion ? "2025.1",
+}:
+final: prev: {
 
   inherit (prev.callPackages ./pkgs/embeddedsw.nix { inherit xlnxVersion; })
-    zynqmp-fsbl zynqmp-pmufw zynq-fsbl;
-  ubootZynqMP = prev.callPackage ./pkgs/u-boot-xlnx.nix { inherit xlnxVersion; platform = "zynqmp"; };
-  ubootZynq = prev.callPackage ./pkgs/u-boot-xlnx.nix { inherit xlnxVersion; platform = "zynq"; };
-  armTrustedFirmwareZynqMP = prev.callPackage ./pkgs/arm-trusted-firmware-xlnx.nix { inherit xlnxVersion; };
-  linux_zynqmp = prev.callPackage ./pkgs/linux-xlnx { inherit xlnxVersion; defconfig = "xilinx_defconfig"; kernelPatches = [ ]; };
-  linux_zynq = prev.callPackage ./pkgs/linux-xlnx { inherit xlnxVersion; defconfig = "xilinx_zynq_defconfig"; kernelPatches = [ ]; };
+    zynqmp-fsbl
+    zynqmp-pmufw
+    zynq-fsbl
+    ;
+  ubootZynqMP = prev.callPackage ./pkgs/u-boot-xlnx.nix {
+    inherit xlnxVersion;
+    platform = "zynqmp";
+  };
+  ubootZynq = prev.callPackage ./pkgs/u-boot-xlnx.nix {
+    inherit xlnxVersion;
+    platform = "zynq";
+  };
+  armTrustedFirmwareZynqMP = prev.callPackage ./pkgs/arm-trusted-firmware-xlnx.nix {
+    inherit xlnxVersion;
+  };
+  linux_zynqmp = prev.callPackage ./pkgs/linux-xlnx {
+    inherit xlnxVersion;
+    defconfig = "xilinx_defconfig";
+    kernelPatches = [ ];
+  };
+  linux_zynq = prev.callPackage ./pkgs/linux-xlnx {
+    inherit xlnxVersion;
+    defconfig = "xilinx_zynq_defconfig";
+    kernelPatches = [ ];
+  };
   linuxPackages_zynqmp = (prev.linuxKernel.packagesFor final.linux_zynqmp).extend final.xlnxExtraLinuxPackages;
   linuxPackages_zynq = (prev.linuxKernel.packagesFor final.linux_zynq).extend final.xlnxExtraLinuxPackages;
 
-  xlnxExtraLinuxPackages= kfinal: kprev: {
+  xlnxExtraLinuxPackages = kfinal: kprev: {
     xlnx-hdmi-modules = kprev.callPackage ./pkgs/hdmi-modules.nix { };
     xlnx-dp-modules = kprev.callPackage ./pkgs/dp-modules.nix { };
     xlnx-vcu-modules = kprev.callPackage ./pkgs/vcu-modules.nix { };
@@ -32,12 +54,16 @@
   };
 
   gst_all_1 = prev.gst_all_1 // {
-    gst-omx-zynqultrascaleplus = (prev.callPackage ./pkgs/gst-omx.nix { omxTarget = "zynqultrascaleplus"; }).overrideAttrs (super: {
-      mesonFlags = super.mesonFlags ++ [ (prev.lib.mesonOption "header_path" "${final.libomxil-xlnx}/include/vcu-omx-il") ];
-      postPatch = super.postPatch + ''
-        substituteInPlace config/zynqultrascaleplus/gstomx.conf --replace "/usr" "${final.libomxil-xlnx}"
-      '';
-    });
+    gst-omx-zynqultrascaleplus =
+      (prev.callPackage ./pkgs/gst-omx.nix { omxTarget = "zynqultrascaleplus"; }).overrideAttrs
+        (super: {
+          mesonFlags = super.mesonFlags ++ [
+            (prev.lib.mesonOption "header_path" "${final.libomxil-xlnx}/include/vcu-omx-il")
+          ];
+          postPatch = super.postPatch + ''
+            substituteInPlace config/zynqultrascaleplus/gstomx.conf --replace "/usr" "${final.libomxil-xlnx}"
+          '';
+        });
   };
 
   xilinx-bootgen_nixosxlnx = prev.xilinx-bootgen.overrideAttrs rec {
@@ -46,13 +72,17 @@
       owner = "Xilinx";
       repo = "bootgen";
       rev = version;
-      hash = {
-        "2024.1" = "sha256-/gNAqjwfaD2NWxs2536XGv8g2IyRcQRHzgLcnCr4a34=";
-        "2025.1" = "sha256-VMmqNaptD6pEJDVSmmOvHcEl+5WUfwZMwxDoaiDPdxg=";
-      }.${xlnxVersion};
+      hash =
+        {
+          "2024.1" = "sha256-/gNAqjwfaD2NWxs2536XGv8g2IyRcQRHzgLcnCr4a34=";
+          "2025.1" = "sha256-VMmqNaptD6pEJDVSmmOvHcEl+5WUfwZMwxDoaiDPdxg=";
+        }
+        .${xlnxVersion};
     };
     installPhase = ''
-      install -Dm755 ${if prev.lib.versionAtLeast xlnxVersion "2025.1" then "build/bin/bootgen" else "bootgen"} $out/bin/bootgen
+      install -Dm755 ${
+        if prev.lib.versionAtLeast xlnxVersion "2025.1" then "build/bin/bootgen" else "bootgen"
+      } $out/bin/bootgen
     '';
   };
   python-lopper = prev.python3Packages.callPackage ./pkgs/lopper.nix { };

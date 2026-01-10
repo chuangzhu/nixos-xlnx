@@ -1,12 +1,13 @@
-{ lib
-, stdenv
-, fetchFromGitLab
-, fetchpatch
-, pkg-config
-, autoreconfHook
-, xorg
-, libdrm
-, xlnxVersion ? "2025.1"
+{
+  lib,
+  stdenv,
+  fetchFromGitLab,
+  fetchpatch,
+  pkg-config,
+  autoreconfHook,
+  xorg,
+  libdrm,
+  xlnxVersion ? "2025.1",
 }:
 
 stdenv.mkDerivation (finalAttrs: {
@@ -16,7 +17,10 @@ stdenv.mkDerivation (finalAttrs: {
   # The <nixpkgs/pkgs/servers/x11/xorg/builder.sh> builder must be used, or
   # Failed to load armsoc_drv.so: undefined symbol: "exaDriverAlloc"
   builder = lib.elemAt xorg.xf86videofbdev.args 1;
-  hardeningDisable = [ "bindnow" "relro" ];
+  hardeningDisable = [
+    "bindnow"
+    "relro"
+  ];
   strictDeps = true;
 
   src = fetchFromGitLab {
@@ -37,7 +41,8 @@ stdenv.mkDerivation (finalAttrs: {
       url = "https://git.yoctoproject.org/meta-xilinx/plain/meta-xilinx-core/dynamic-layers/openembedded-layer/recipes-graphics/xorg-driver/xf86-video-armsoc/0001-src-drmmode_xilinx-Add-the-dumb-gem-support-for-Xili.patch?h=fd359f0cf8973aff3fa46cd43111e093fbad26a1";
       hash = "sha256-ZbZivnv+rqHScl1YLS8ICW7bb1xMX1/DSJ2h+EI7yH4=";
     })
-  ] ++ lib.optionals (lib.versionAtLeast xlnxVersion "2025.1") [
+  ]
+  ++ lib.optionals (lib.versionAtLeast xlnxVersion "2025.1") [
     (fetchpatch {
       url = "https://git.yoctoproject.org/meta-xilinx/plain/meta-xilinx-core/dynamic-layers/openembedded-layer/recipes-graphics/xorg-driver/xf86-video-armsoc/0001-xf86-video-armsoc-Add-shadow-buffer-hooks.patch?h=80923f7036d91b7c4ba20b19ca61f258b53295dc";
       hash = "sha256-jFZz+56PpS5oYYdTvrLPZHlbe9zP62A0Oo4RYK+02PI=";

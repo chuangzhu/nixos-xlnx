@@ -1,11 +1,19 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
   imports = [ ./boot-bin.nix ];
 
   options.hardware.zynq = {
     xlnxVersion = lib.mkOption {
-      type = lib.types.enum [ "2024.1" "2025.1" ];
+      type = lib.types.enum [
+        "2024.1"
+        "2025.1"
+      ];
       description = lib.mdDoc ''
         Xilinx Vivado Design Suite version of your hardware design.
       '';
@@ -22,7 +30,10 @@
 
     boot.kernelPackages = lib.mkDefault pkgs."linuxPackages_${config.hardware.zynq.platform}";
 
-    boot.kernelParams = lib.mkDefault [ "earlycon" "console=ttyPS0,115200n8" ];
+    boot.kernelParams = lib.mkDefault [
+      "earlycon"
+      "console=ttyPS0,115200n8"
+    ];
 
     hardware.deviceTree = {
       enable = true;
@@ -54,9 +65,16 @@
       "ohci_hcd"
       "ohci_pci"
       "usbhid"
-      "hid_generic" "hid_lenovo" "hid_apple" "hid_roccat"
-      "hid_logitech_hidpp" "hid_logitech_dj" "hid_microsoft" "hid_cherry"
-    ] ++ lib.optionals (config.hardware.zynq.platform != "zynq") [
+      "hid_generic"
+      "hid_lenovo"
+      "hid_apple"
+      "hid_roccat"
+      "hid_logitech_hidpp"
+      "hid_logitech_dj"
+      "hid_microsoft"
+      "hid_cherry"
+    ]
+    ++ lib.optionals (config.hardware.zynq.platform != "zynq") [
       "xhci_hcd"
       "xhci_pci"
       # Broadcom

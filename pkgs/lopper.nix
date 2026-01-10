@@ -1,13 +1,14 @@
-{ lib
-, buildPythonPackage
-, fetchFromGitHub
-, humanfriendly
-, configparser
-, libfdt
-, ruamel-yaml
-, pyyaml
-, anytree
-, packaging
+{
+  lib,
+  buildPythonPackage,
+  fetchFromGitHub,
+  humanfriendly,
+  configparser,
+  libfdt,
+  ruamel-yaml,
+  pyyaml,
+  anytree,
+  packaging,
 }:
 
 buildPythonPackage {

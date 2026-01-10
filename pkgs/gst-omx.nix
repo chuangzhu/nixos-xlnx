@@ -1,16 +1,18 @@
-{ lib
-, stdenv
-, fetchurl
-, meson
-, ninja
-, pkg-config
-, gst_all_1
-, libGL
-, python3
-# Could be "generic", "rpi", "bellagio", "zynqultrascaleplus", "tizonia"
-, omxTarget ? "generic"
-# Checks meson.is_cross_build(), so even canExecute isn't enough.
-, enableDocumentation ? stdenv.hostPlatform == stdenv.buildPlatform, hotdoc
+{
+  lib,
+  stdenv,
+  fetchurl,
+  meson,
+  ninja,
+  pkg-config,
+  gst_all_1,
+  libGL,
+  python3,
+  # Could be "generic", "rpi", "bellagio", "zynqultrascaleplus", "tizonia"
+  omxTarget ? "generic",
+  # Checks meson.is_cross_build(), so even canExecute isn't enough.
+  enableDocumentation ? stdenv.hostPlatform == stdenv.buildPlatform,
+  hotdoc,
 }:
 
 stdenv.mkDerivation rec {
@@ -22,14 +24,18 @@ stdenv.mkDerivation rec {
     hash = "sha256-b1HCMxwzRZPCw88S6fIrnjtBmjJHz7L+wOG9hFVphjo=";
   };
 
-  outputs = [ "out" "dev" ];
+  outputs = [
+    "out"
+    "dev"
+  ];
 
   nativeBuildInputs = [
     meson
     ninja
     pkg-config
     python3
-  ] ++ lib.optionals enableDocumentation [
+  ]
+  ++ lib.optionals enableDocumentation [
     hotdoc
   ];
 
