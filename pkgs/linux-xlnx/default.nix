@@ -18,7 +18,7 @@ let
       # "2022.2" = "5.15.0";
       # "2023.2" = "6.1.30";
       "2024.1" = "6.6.10";
-      "2025.1" = "6.12.10";
+      "2025.1" = "6.12.60";
     }
     .${xlnxVersion} or throwVersion;
 
@@ -41,7 +41,7 @@ buildLinux (
           "2022.2" = "xilinx-v2022.2";
           "2023.2" = "a19da02cf5b44420ec6afb1eef348c21d9e8cda2"; # xlnx_rebase_v6.1_LTS
           "2024.1" = "xlnx_rebase_v6.6_LTS_2024.1";
-          "2025.1" = "xlnx_rebase_v6.12_LTS_2025.1";
+          "2025.1" = "xlnx_rebase_v6.12_LTS_2025.1_update";
         }
         .${xlnxVersion};
       hash =
@@ -49,7 +49,7 @@ buildLinux (
           "2022.2" = "sha256-8iPAKyK+jPkjl1TWn+IbiHN9iRyuWFivp/MeCEsNVlM=";
           "2023.2" = "sha256-gYZQLauQ/Sa2AnJdLdcWKwfQqDqctmllMDj0Rjz3qm8=";
           "2024.1" = "sha256-tfpNLRtC9OQZfWaLkaGM42bqhLICDPeT5AoE271p3a0=";
-          "2025.1" = "sha256-6iVaKYFaDuteXEi3FHRv7G0x07yd/3nY1QFCfYKVm/0=";
+          "2025.1" = "sha256-O7gN30s35tVYfhdKaGQ5z1AR19NMsYz5LtrXt8fSgzc=";
         }
         .${xlnxVersion};
     };
@@ -61,6 +61,7 @@ buildLinux (
         CRYPTO_DEV_XILINX_ECDSA = no; # Error: modpost: "ecdsasignature_decoder" undefined!
         MMC_BLOCK = yes;
         RPMB = no; # MMC_BLOCK depends on RPMB || !RPMB, so must be yes or no, not module
+        RUST = lib.mkForce no;
       }
       // lib.optionalAttrs (defconfig == "xilinx_zynq_defconfig") {
         DRM_XLNX_BRIDGE = yes; # DRM_XLNX uses xlnx_bridge_helper_init
@@ -129,6 +130,7 @@ buildLinux (
       "armv7l-linux"
     ];
 
+    ignoreConfigErrors = true;
   }
   // (args.argsOverride or { })
 )

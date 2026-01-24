@@ -11,11 +11,11 @@
 stdenv.mkDerivation {
   name = "xilinx_axidma";
   outputs = [
-    "out"
-    "bin"
-    "dev"
-    "devdoc"
     "drivers"
+    "out"
+    # "bin"
+    # "dev"
+    # "devdoc"
   ];
 
   src = fetchFromGitHub {
@@ -33,39 +33,42 @@ stdenv.mkDerivation {
       url = "https://github.com/chuangzhu/xilinx_axidma/commit/d97ddd12bac89d98b836c624f603775f29594d44.patch";
       hash = "sha256-Y7ZZpqMchgM371KKJ/p+RQq3jY3ncut9HpW6H7S+kSk=";
     })
+    ./xilinx-axidma.patch # disable .so build because of `arch64-unknown-linux-gnu-ld: cannot find crti.o: No such file or directory`
   ];
 
   nativeBuildInputs = kernel.moduleBuildDependencies ++ [
     which
     doxygen
   ];
-  makeFlags = kernel.makeFlags ++ [
+
+  makeFlags = (lib.filter (x: x != "--eval=undefine modules") kernel.makeFlags) ++ [
     "KBUILD_DIR=${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
   ];
 
   NIX_CFLAGS_COMPILE = "-Wno-error";
 
-  postBuild = ''
-    doxygen libaxidma.dox
-  '';
+  # postBuild = ''
+  #   doxygen libaxidma.dox
+  # '';
 
   installPhase = ''
     runHook preInstall
-    install -Dm555 outputs/libaxidma.so -t $out/lib/
-    install -Dm555 outputs/axidma_benchmark -t $bin/bin/
-    install -Dm555 outputs/axidma_display_image -t $bin/bin/
-    install -Dm555 outputs/axidma_transfer -t $bin/bin/
-    install -Dm444 include/axidma_ioctl.h -t $dev/include/
-    install -Dm444 include/libaxidma.h -t $dev/include/
+    mkdir -p $out/lib
+    # install -Dm555 outputs/libaxidma.so -t $out/lib/
+    # # install -Dm555 outputs/axidma_benchmark -t $bin/bin/
+    # # install -Dm555 outputs/axidma_display_image -t $bin/bin/
+    # # install -Dm555 outputs/axidma_transfer -t $bin/bin/
+    # install -Dm444 include/axidma_ioctl.h -t $dev/include/
+    # install -Dm444 include/libaxidma.h -t $dev/include/
     install -Dm444 outputs/axidma.ko -t $drivers/lib/modules/${kernel.modDirVersion}/extra/
     runHook postInstall
   '';
 
-  postFixup = ''
-    # Cannot be in postInstall, otherwise _multioutDocs hook in preFixup will move right back.
-    mkdir -p $devdoc/share/doc/
-    cp -r docs/html $devdoc/share/doc/xilinx_axidma
-  '';
+  # postFixup = ''
+  # Cannot be in postInstall, otherwise _multioutDocs hook in preFixup will move right back.
+  # mkdir -p $devdoc/share/doc/
+  # cp -r docs/html $devdoc/share/doc/xilinx_axidma
+  # '';
 
   meta = with lib; {
     description = "Zero-copy Linux driver and userspace interface library for Xilinx's AXI DMA and VDMA IP blocks";

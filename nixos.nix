@@ -26,7 +26,11 @@
       generic-extlinux-compatible.enable = lib.mkDefault true;
     };
 
-    nixpkgs.overlays = [ (import ./overlay.nix { inherit (config.hardware.zynq) xlnxVersion; }) ];
+    nixpkgs.overlays = [
+      (import ./overlay.nix {
+        inherit (config.hardware.zynq) xlnxVersion;
+      })
+    ];
 
     boot.kernelPackages = lib.mkDefault pkgs."linuxPackages_${config.hardware.zynq.platform}";
 
@@ -49,6 +53,7 @@
 
     # Some modules specified in <nixpkgs/nixos/modules/system/boot/kernel.nix> aren't available...
     boot.initrd.includeDefaultModules = false;
+    boot.initrd.allowMissingModules = true;
     boot.initrd.availableKernelModules = [
       "ahci"
       "sata_inic162x"

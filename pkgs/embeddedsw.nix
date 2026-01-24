@@ -23,16 +23,33 @@ let
       .${xlnxVersion};
   };
 
-  libmetal = fetchFromGitHub {
-    owner = "Xilinx"; # OpenAMP
-    repo = "libmetal";
-    rev = "xilinx_v${xlnxVersion}";
-    hash =
-      {
-        "2024.1" = "sha256-GNOVRbn5MfwUKpZl4cVUBAykH6YZjTXNi1Az7dj5Ez8=";
-        "2025.1" = "sha256-gzTIM8rGpKH0pPaJx+8/PDII+ZFCA0DiVaOagN30Gy4=";
-      }
-      .${xlnxVersion};
+  libmetal = stdenv.mkDerivation {
+    name = "libmetal";
+    version = xlnxVersion;
+
+    src = fetchFromGitHub {
+      owner = "Xilinx"; # OpenAMP
+      repo = "libmetal";
+      rev = "xilinx_v${xlnxVersion}";
+      hash =
+        {
+          "2024.1" = "sha256-GNOVRbn5MfwUKpZl4cVUBAykH6YZjTXNi1Az7dj5Ez8=";
+          "2025.1" = "sha256-gzTIM8rGpKH0pPaJx+8/PDII+ZFCA0DiVaOagN30Gy4=";
+        }
+        .${xlnxVersion};
+    };
+
+    dontBuild = true;
+
+    # CMake 4 compatibility
+    patchPhase = ''
+      find . -type f -print0 | xargs -0 sed -i "s/cmake_minimum_required *(VERSION .*)/cmake_minimum_required(VERSION 3.15)/"
+    '';
+
+    installPhase = ''
+      mkdir -p $out
+      cp -a . $out/
+    '';
   };
 
   # XILINX_VITIS
@@ -78,6 +95,10 @@ let
         postPatch =
           lib.optionalString (lib.versionAtLeast xlnxVersion "2025.1") ''
             substituteInPlace scripts/pyesw/repo.py --replace-fail "resolve_paths([shell_esw_repo])" 'resolve_paths({"set_repo_path": [shell_esw_repo]})'
+          ''
+          + ''
+            # https://github.com/Xilinx/embeddedsw/issues/373
+            find . -type f -print0 | xargs -0 sed -i "s/cmake_minimum_required *(VERSION .*)/cmake_minimum_required(VERSION 3.15)/"
           ''
           + postPatch;
 

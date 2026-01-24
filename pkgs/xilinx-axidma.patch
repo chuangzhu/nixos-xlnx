@@ -1,0 +1,14 @@
+diff --git a/Makefile b/Makefile
+index 14beb67307..0bbc1fc142 100755
+--- a/Makefile
++++ b/Makefile
+@@ -37,7 +37,7 @@
+ .PHONY: all docs clean cross_compiler_check help
+ 
+ # Compile the driver, library, and examples in release mode as the default
+-all: driver library examples
++all: driver
+ 
+ # Generate the doxygen documentation for library
+ docs: library_docs
+
