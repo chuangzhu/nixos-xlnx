@@ -61,7 +61,6 @@ buildLinux (
         CRYPTO_DEV_XILINX_ECDSA = no; # Error: modpost: "ecdsasignature_decoder" undefined!
         MMC_BLOCK = yes;
         RPMB = no; # MMC_BLOCK depends on RPMB || !RPMB, so must be yes or no, not module
-        RUST = lib.mkForce no;
       }
       // lib.optionalAttrs (defconfig == "xilinx_zynq_defconfig") {
         DRM_XLNX_BRIDGE = yes; # DRM_XLNX uses xlnx_bridge_helper_init
