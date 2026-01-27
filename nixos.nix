@@ -51,9 +51,10 @@
 
     nixpkgs.hostPlatform = lib.mkDefault "aarch64-linux";
 
+    hardware.enableAllHardware = lib.mkForce false;
+
     # Some modules specified in <nixpkgs/nixos/modules/system/boot/kernel.nix> aren't available...
     boot.initrd.includeDefaultModules = false;
-    boot.initrd.allowMissingModules = true;
     boot.initrd.availableKernelModules = [
       "ahci"
       "sata_inic162x"
