@@ -26,6 +26,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   makeFlags = (if kernelModuleMakeFlags != null then kernelModuleMakeFlags else kernel.makeFlags) ++ [
     "KERNEL_SRC=${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
+    "CFLAGS_MODULE=$(NIX_CFLAGS_COMPILE)"
   ];
 
   # hdmi/xilinx_drm_hdmi.c #includes drivers/gpu/drm/xlnx/xlnx_bridge.h
