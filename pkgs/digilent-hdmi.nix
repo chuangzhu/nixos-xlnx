@@ -3,6 +3,7 @@
   stdenv,
   fetchurl,
   kernel,
+  kernelModuleMakeFlags ? null,
 }:
 
 stdenv.mkDerivation (finalAttrs: {
@@ -24,7 +25,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   nativeBuildInputs = kernel.moduleBuildDependencies;
 
-  makeFlags = kernel.makeFlags ++ [
+  makeFlags = (if kernelModuleMakeFlags != null then kernelModuleMakeFlags else kernel.makeFlags) ++ [
     "-C"
     "${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
     "M=$(PWD)"

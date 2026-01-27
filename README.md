@@ -197,7 +197,7 @@ Example Nix package:
 ```nix
 # module-name/derivation.nix
 
-{ lib, stdenv, kernel, kmod }:
+{ lib, stdenv, kernel, kmod, kernelModuleMakeFlags ? null }:
 
 stdenv.mkDerivation {
   name = "module-name";
@@ -208,7 +208,7 @@ stdenv.mkDerivation {
 
   nativeBuildInputs = kernel.moduleBuildDependencies ++ [ kmod ];
 
-  makeFlags = kernel.makeFlags ++ [
+  makeFlags = (if kernelModuleMakeFlags != null then kernelModuleMakeFlags else kernel.makeFlags) ++ [
     "KDIR=${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
   ];
   installFlags = [ "INSTALL_MOD_PATH=$(out)" ];
@@ -223,7 +223,7 @@ Add the package to your system's config:
 
 ```nix
 boot.extraModulePackages = [
-    (config.boot.kernelPackages.callPackage ./module-name/derivation.nix { })
+  (config.boot.kernelPackages.callPackage ./module-name/derivation.nix { })
 ];
 ```
 

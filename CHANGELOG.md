@@ -1,3 +1,46 @@
+## [20260124.ab3cf41]
+
+[20260124.ab3cf41]: https://github.com/chuangzhu/nixos-xlnx/tree/ab3cf41e0af6485c39bc7b1535850d4d2605ddce
+
+The default Nixpkgs pin is upgraded from `nixpkgs-unstable` [`20240719.1d9c2c9b3e71`](https://github.com/NixOS/nixpkgs/tree/1d9c2c9b3e71b9ee663d11c5d298727dace8d374) to [`nixos-25.11`](https://nixos.org/blog/announcements/2025/nixos-2511/). If you are not yet ready to upgrade, you can pin Nixpkgs back to commit `1d9c2c9b3e71`.
+
+```diff
+ {
+   inputs.nixos-xlnx.url = "github:chuangzhu/nixos-xlnx";
++  inputs.nixpkgs = "github:NixOS/nixpkgs/1d9c2c9b3e71b9ee663d11c5d298727dace8d374";
++  inputs.nixos-xlnx.inputs.nixpkgs.follows = "nixpkgs";
+```
+
+Since nixos-24.11, you have to use `kernelModuleMakeFlags` instead of `kernel.makeFlags` in your own kernel modules:
+
+```diff
+ # module-name/derivation.nix
+ 
+-{ lib, stdenv, kernel, kmod }:
++{ lib, stdenv, kernel, kmod, kernelModuleMakeFlags }:
+ 
+ stdenv.mkDerivation {
+   name = "module-name";
+ 
+   src = ./.;
+ 
+   hardeningDisable = [ "pic" ];
+ 
+   nativeBuildInputs = kernel.moduleBuildDependencies ++ [ kmod ];
+ 
+-  makeFlags = kernel.makeFlags ++ [
++  makeFlags = kernelModuleMakeFlags ++ [
+     "KDIR=${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
+   ];
+   installFlags = [ "INSTALL_MOD_PATH=$(out)" ];
+   installTargets = [ "modules_install" ];
+ 
+   enableParallelBuilding = true;
+ }
+```
+
+See NixOS/nixpkgs#376078 and NixOS/nixpkgs#377327.
+
 ## [20250825.932f475]
 
 [20250825.932f475]: https://github.com/chuangzhu/nixos-xlnx/tree/932f47584b39a8a0b86863718f5ba9f1fd8e9ce5

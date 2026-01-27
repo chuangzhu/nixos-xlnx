@@ -2,8 +2,8 @@
   lib,
   stdenv,
   fetchurl,
-  fetchpatch,
   kernel,
+  kernelModuleMakeFlags ? null,
   xlnxVersion ? "2025.1",
 }:
 
@@ -65,7 +65,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   nativeBuildInputs = kernel.moduleBuildDependencies ++ [ ];
 
-  makeFlags = kernel.makeFlags ++ [
+  makeFlags = (if kernelModuleMakeFlags != null then kernelModuleMakeFlags else kernel.makeFlags) ++ [
     "KDIR=${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
   ];
 
