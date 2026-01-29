@@ -242,8 +242,9 @@ boot.kernelPatches = [
   {
     name = "devmem";
     patch = null;
-    extraStructuredConfig.STRICT_DEVMEM = lib.kernel.no;
-    extraStructuredConfig.IO_STRICT_DEVMEM = lib.kernel.no;
+    # It was extraStructuredConfig before nixos-25.05
+    structuredExtraConfig.STRICT_DEVMEM = lib.kernel.no;
+    structuredExtraConfig.IO_STRICT_DEVMEM = lib.kernel.no;
   }
 ];
 ```

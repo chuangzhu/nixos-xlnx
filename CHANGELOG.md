@@ -7,7 +7,7 @@ The default Nixpkgs pin is upgraded from `nixpkgs-unstable` [`20240719.1d9c2c9b3
 ```diff
  {
    inputs.nixos-xlnx.url = "github:chuangzhu/nixos-xlnx";
-+  inputs.nixpkgs = "github:NixOS/nixpkgs/1d9c2c9b3e71b9ee663d11c5d298727dace8d374";
++  inputs.nixpkgs.url = "github:NixOS/nixpkgs/1d9c2c9b3e71b9ee663d11c5d298727dace8d374";
 +  inputs.nixos-xlnx.inputs.nixpkgs.follows = "nixpkgs";
 ```
 
