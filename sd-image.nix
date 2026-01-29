@@ -2,6 +2,8 @@
   config,
   pkgs,
   modulesPath,
+  options,
+  lib,
   ...
 }:
 
@@ -24,6 +26,12 @@
         mkdir -p ./files/boot
         ${config.boot.loader.generic-extlinux-compatible.populateCmd} -c ${config.system.build.toplevel} -d ./files/boot
       '';
+    };
+
+    # Contents of profiles/all-hardware.nix is transferred to an option in nixos-25.05
+    # Had to do this because I want to make it backwards compatible
+    hardware = lib.optionalAttrs (options.hardware ? enableAllHardware) {
+      enableAllHardware = lib.mkForce false;
     };
 
     environment.systemPackages = [
