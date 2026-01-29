@@ -41,7 +41,7 @@ buildLinux (
           "2022.2" = "xilinx-v2022.2";
           "2023.2" = "a19da02cf5b44420ec6afb1eef348c21d9e8cda2"; # xlnx_rebase_v6.1_LTS
           "2024.1" = "xlnx_rebase_v6.6_LTS_2024.1";
-          "2025.1" = "xlnx_rebase_v6.12_LTS_2025.1_update";
+          "2025.1" = "xlnx_rebase_v6.12_LTS_2025.1_update_merge_6.12.60";
         }
         .${xlnxVersion};
       hash =
