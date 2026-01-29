@@ -44,5 +44,14 @@
         '';
       })
     ];
+
+    # Workaround efivar build failure on armv7l-linux
+    # We don't use EFI, they're just referenced in <nixpkgs/nixos/modules/profiles/base.nix>
+    nixpkgs.overlays = [
+      (self: super: {
+        efivar = pkgs.emptyDirectory;
+        efibootmgr = pkgs.emptyDirectory;
+      })
+    ];
   };
 }
