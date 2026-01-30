@@ -2,14 +2,13 @@
 
 NixOS and Nix packages for Xilinx Zynq 7000 SoCs and Zynq UltraScale+ MPSoCs. It's like PetaLinux, but instead of Yocto/OpenEmbedded/BitBake, it uses NixOS/Nixpkgs/Nix.
 
-Status: **ALPHA**. Options may change anytime without noticing. Pin your inputs!
-<!-- Status: **BETA**. Breaking changes will be documented in [CHANGELOG.md](./CHANGELOG.md). -->
+Status: **BETA**. Breaking changes will be documented in [CHANGELOG.md](./CHANGELOG.md).
 
 ## Support matrix
 
 |                                        | Vivado 2025.1 | Vivado 2024.2 | Vivado 2024.1 | Vivado 2023.2 | Vivado 2023.1 | Vivado 2022.2 |
 |----------------------------------------|---------------|---------------|---------------|---------------|---------------|---------------|
-| nixos-25.11 (upcoming)                 | ❔            | ➖            | ❔            |               |               |               |
+| nixos-25.11                            | ✅            | ➖            | ✅            |               |               |               |
 | nixos-25.05                            | ❔            | ➖            | ❔            |               |               |               |
 | nixos-24.11                            | ❔            | ➖            | ❔            |               |               |               |
 | nixos-unstable [20240719.1d9c2c9b3e71] | ✅            |               | ✅            |               |               |               |
