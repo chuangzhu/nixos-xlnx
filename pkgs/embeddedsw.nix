@@ -1,6 +1,7 @@
 {
   lib,
   stdenv,
+  stdenvNoCC,
   fetchFromGitHub,
   buildPackages,
   cmake,
@@ -23,7 +24,7 @@ let
       .${xlnxVersion};
   };
 
-  libmetal = stdenv.mkDerivation {
+  libmetal = stdenvNoCC.mkDerivation {
     name = "libmetal";
     version = xlnxVersion;
 
@@ -43,7 +44,7 @@ let
 
     # CMake 4 compatibility
     patchPhase = ''
-      find . -type f -print0 | xargs -0 sed -i "s/cmake_minimum_required *(VERSION .*)/cmake_minimum_required(VERSION 3.15)/"
+      sed -i 's/cmake_minimum_required *(VERSION .*)/cmake_minimum_required(VERSION 3.15)/' CMakeLists.txt
     '';
 
     installPhase = ''
@@ -92,15 +93,15 @@ let
         env.LOPPER_DTC_FLAGS = "-@";
         env.XILINX_VITIS = vitisDepsDir;
 
-        postPatch =
-          lib.optionalString (lib.versionAtLeast xlnxVersion "2025.1") ''
-            substituteInPlace scripts/pyesw/repo.py --replace-fail "resolve_paths([shell_esw_repo])" 'resolve_paths({"set_repo_path": [shell_esw_repo]})'
-          ''
-          + ''
-            # https://github.com/Xilinx/embeddedsw/issues/373
-            find . -type f -print0 | xargs -0 sed -i "s/cmake_minimum_required *(VERSION .*)/cmake_minimum_required(VERSION 3.15)/"
-          ''
-          + postPatch;
+        postPatch = ''
+          # https://github.com/Xilinx/embeddedsw/issues/373
+          find \( -name '*CMakeLists.txt' -o -name '*.cmake' \) -exec \
+            sed -i 's/cmake_minimum_required *(VERSION .*)/cmake_minimum_required(VERSION 3.15)/' {} +
+        ''
+        + lib.optionalString (lib.versionAtLeast xlnxVersion "2025.1") ''
+          substituteInPlace scripts/pyesw/repo.py --replace-fail "resolve_paths([shell_esw_repo])" 'resolve_paths({"set_repo_path": [shell_esw_repo]})'
+        ''
+        + postPatch;
 
         configurePhase = ''
           runHook preConfigure
