@@ -1,0 +1,44 @@
+diff --git a/dma-proxy.c b/linux-user-space-dma/Software/Kernel/dma-proxy.c
+index 10353e4811..9a2397863d 100644
+--- a/dma-proxy.c
++++ b/dma-proxy.c
+@@ -433,18 +433,19 @@
+ #endif
+                                  DRIVER_NAME
+                                  );
+-        pchannel_p->class_p = local_class_p;
+ 		if (IS_ERR_OR_NULL(local_class_p)) {
+ 			dev_err(pchannel_p->dma_device_p, "unable to create class\n");
+             if(!local_class_p) {
+                 return -ENOMEM;
+             } else {
+-                return ERR_PTR(local_class_p);
++                return PTR_ERR(local_class_p);
+             }
+ 			goto init_error2;
+ 		}
+ 	}
+ 
++  pchannel_p->class_p = local_class_p;
++
+ 	/* Create the device node in /dev so the device is accessible
+ 	 * as a character device
+ 	 */
+@@ -636,7 +637,7 @@
+  
+ /* Exit the dma proxy device driver module.
+  */
+-static int dma_proxy_remove(struct platform_device *pdev)
++static void dma_proxy_remove(struct platform_device *pdev)
+ {
+ 	int i;
+ 	struct device *dev = &pdev->dev;
+@@ -662,7 +663,7 @@
+ 			lp->channels[i].channel_p->device->device_terminate_all(lp->channels[i].channel_p);
+ 			dma_release_channel(lp->channels[i].channel_p);
+ 		}
+-	return 0;
++	return;
+ }
+ 
+ static const struct of_device_id dma_proxy_of_ids[] = {
