@@ -1,6 +1,6 @@
 Besides the packages supporting boot, this repo contains some other useful packages. Check the `meta` fields in these packages for more information.
 
-* [`pkgs.zynqmp-fsbl`, `pkgsCross.pmu.zynqmp-pmufw`](./embeddedsw.nix): System-device-tree flow support packages
+* [`pkgs.zynqmp-fsbl`, `pkgsCross.microblaze-embedded.zynqmp-pmufw`](./embeddedsw.nix): System-device-tree flow support packages
 * [`pkgs.gst_all_1.gst-omx-zynqultrascaleplus`](./gst-omx.nix)
 * [`config.boot.kernelPackages.xlnx-hdmi-modules`](./hdmi-modules.nix), [`config.boot.kernelPackages.xlnx-dp-modules`](./dp-modules.nix)
 * [`config.boot.kernelPackages.xlnx-vcu-modules`](./vcu-modules.nix), [`pkgs.xlnx-vcu-firmware`](./vcu-firmware.nix)

@@ -63,7 +63,7 @@ Vivado 2025.1 support is added to the master branch. To support multiple Vivado 
 
 Since Vivado 2024.1\*, FSBL and PMUFW can be built from source using the system-device-tree flow. However, system-device-tree and device-tree generation from XSA still requires Vivado HSI to work. You need to run [`scripts/gendt.tcl`](./scripts/gendt.tcl) in XSCT to do that.
 
-Nothing stops you from keep using the proprietary Vitis flow though, but the SDT flow is generally cleaner and I highly recommend you to use it.
+Nothing stops you from keeping using the proprietary Vitis flow though, but the SDT flow is generally cleaner and I highly recommend you to use it.
 
 Previous:
 
@@ -98,4 +98,4 @@ hardware.zynq = {
 };
 ```
 
-\*: Actually system-device-tree flow is added in Vivado 2023.2. But it contains bugs and does not boot.
+\*: Technically system-device-tree flow is added in Vivado 2023.2. But it contains bugs and does not boot.
