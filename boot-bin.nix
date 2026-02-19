@@ -141,7 +141,7 @@ in
         '';
       description = lib.mdDoc ''
         You can build BOOT.BIN without building the whole system using
-        {command}`nix build .#nixosConfigurations.<hostname>.cfg.boot-bin`
+        {command}`nix build .#nixosConfigurations.<hostname>.config.hardware.zynq.boot-bin`
       '';
     };
   };
