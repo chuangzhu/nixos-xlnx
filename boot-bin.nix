@@ -26,6 +26,45 @@ let
         };
         overlays = [ (import ./overlay.nix { inherit (config.hardware.zynq) xlnxVersion; }) ];
       };
+
+  bifEntryType = lib.types.submodule {
+    options = {
+      attributes = lib.mkOption {
+        type = lib.types.nullOr (lib.types.listOf lib.types.str);
+        default = null;
+        example = [
+          "bootloader"
+          "destination_cpu=a53-0"
+        ];
+        description = lib.mdDoc ''
+          Bracketed attributes for this BIF entry, rendered as
+          `[attr1, attr2, ...]` before the value. `null` (the default)
+          emits no brackets.
+        '';
+      };
+      value = lib.mkOption {
+        type = lib.types.either lib.types.str lib.types.path;
+        example = lib.literalExpression ''"''${pkgs.armTrustedFirmwareZynqMP}/bl31.elf"'';
+        description = lib.mdDoc ''
+          Path or string emitted after the attribute list. Usually a path
+          to a binary (FSBL, PMUFW, bitstream, ELF, dtb), but can also be
+          a parameter string for header-style attributes such as
+          `[auth_params]ppk_select=0;spk_id=0x0`.
+        '';
+      };
+    };
+  };
+
+  renderBifEntry =
+    entry:
+    let
+      attrs =
+        if entry.attributes == null || entry.attributes == [ ] then
+          ""
+        else
+          "[${lib.concatStringsSep ", " entry.attributes}] ";
+    in
+    "${attrs}${toString entry.value}";
 in
 
 {
@@ -107,38 +146,135 @@ in
       '';
     };
 
+    bif = {
+      imageName = lib.mkOption {
+        type = lib.types.str;
+        default = "the_ROM_image";
+        description = lib.mdDoc ''
+          Image name for the BIF (the identifier before the opening brace).
+          Rarely needs to be changed.
+        '';
+      };
+
+      entries = lib.mkOption {
+        type = lib.types.listOf bifEntryType;
+        default =
+          let
+            dtb = "${config.hardware.deviceTree.package}/system.dtb";
+          in
+          {
+            zynqmp = [
+              {
+                attributes = [
+                  "bootloader"
+                  "destination_cpu=a53-0"
+                ];
+                value = cfg.fsbl;
+              }
+              {
+                attributes = [ "pmufw_image" ];
+                value = cfg.pmufw;
+              }
+              {
+                attributes = [ "destination_device=pl" ];
+                value = cfg.bitstream;
+              }
+              {
+                attributes = [
+                  "destination_cpu=a53-0"
+                  "exception_level=el-3"
+                  "trustzone"
+                ];
+                value = "${pkgs.armTrustedFirmwareZynqMP}/bl31.elf";
+              }
+              {
+                attributes = [
+                  "destination_cpu=a53-0"
+                  "load=0x00100000"
+                ];
+                value = dtb;
+              }
+              {
+                attributes = [
+                  "destination_cpu=a53-0"
+                  "exception_level=el-2"
+                ];
+                value = "${pkgs.ubootZynqMP}/u-boot.elf";
+              }
+            ];
+            zynq = [
+              {
+                attributes = [ "bootloader" ];
+                value = cfg.fsbl;
+              }
+              { value = cfg.bitstream; }
+              { value = "${pkgs.ubootZynq}/u-boot.elf"; }
+              {
+                attributes = [ "load=0x00100000" ];
+                value = dtb;
+              }
+            ];
+          }
+          .${cfg.platform};
+        defaultText = lib.literalMD ''
+          Platform-specific list of FSBL, PMUFW, bitstream, ATF, U-Boot, and dtb entries.
+        '';
+        example = lib.literalExpression ''
+          options.hardware.zynq.bif.entries.default ++ [
+            {
+              attributes = [
+                "destination_cpu=a53-0"
+                "exception_level=el-1"
+                "trustzone"
+              ];
+              value = "''${pkgs.opteeOsZynqMP}/tee.elf";
+            }
+          ]
+        '';
+        description = lib.mdDoc ''
+          Structured list of BIF entries. Each entry renders as
+          `[attr1, attr2] value`. Image-header attributes that don't take
+          a file (e.g. `[auth_params]ppk_select=0;spk_id=0x0`) use the
+          same shape — put the parameter string in `value`.
+
+          To extend without redefining the platform default, use
+          {nix}`options.hardware.zynq.bif.entries.default ++ [ yourEntries ]`.
+        '';
+      };
+
+      text = lib.mkOption {
+        type = lib.types.str;
+        defaultText = lib.literalMD ''
+          Built from {option}`hardware.zynq.bif.imageName` and
+          {option}`hardware.zynq.bif.entries`.
+        '';
+        description = lib.mdDoc ''
+          The full BIF text passed to bootgen. Override directly for full
+          control (e.g. multi-image partitions).
+        '';
+      };
+
+      file = lib.mkOption {
+        type = lib.types.path;
+        defaultText = lib.literalMD ''
+          {option}`hardware.zynq.bif.text` written to a file in the Nix store.
+        '';
+        description = lib.mdDoc ''
+          The BIF written out as a file. Useful for invoking `bootgen`
+          manually outside the Nix store, e.g. when secret AES/RSA keys
+          should not end up world-readable in `/nix/store`:
+
+          ```
+          nix build .#nixosConfigurations.<hostname>.config.hardware.zynq.bif.file
+          bootgen -image ./result -arch zynqmp -encrypt efuse -aeskeyfile aes.nky -w -o BOOT.BIN
+          ```
+        '';
+      };
+    };
+
     boot-bin = lib.mkOption {
       type = lib.types.path;
-      defaultText = "generated from fsbl, pmufw, bitstream, and dtb";
-      default =
-        let
-          dtb = "${config.hardware.deviceTree.package}/system.dtb";
-          bif =
-            {
-              zynqmp = ''
-                the_ROM_image: {
-                  [bootloader, destination_cpu=a53-0] ${cfg.fsbl}
-                  [pmufw_image] ${cfg.pmufw}
-                  [destination_device=pl] ${cfg.bitstream}
-                  [destination_cpu=a53-0, exception_level=el-3, trustzone] ${pkgs.armTrustedFirmwareZynqMP}/bl31.elf
-                  [destination_cpu=a53-0, load=0x00100000] ${dtb}
-                  [destination_cpu=a53-0, exception_level=el-2] ${pkgs.ubootZynqMP}/u-boot.elf
-                }
-              '';
-              zynq = ''
-                the_ROM_image: {
-                  [bootloader] ${cfg.fsbl}
-                  ${cfg.bitstream}
-                  ${pkgs.ubootZynq}/u-boot.elf
-                  [load=0x00100000] ${dtb}
-                }
-              '';
-            }
-            .${cfg.platform};
-        in
-        pkgs.runCommand "BOOT.BIN" { nativeBuildInputs = [ pkgs.xilinx-bootgen_nixosxlnx ]; } ''
-          bootgen -image ${pkgs.writeText "bootgen.bif" bif} -arch ${cfg.platform} -w -o $out
-        '';
+      defaultText = lib.literalMD "built by bootgen from {option}`hardware.zynq.bif.file`";
       description = lib.mdDoc ''
         You can build BOOT.BIN without building the whole system using
         {command}`nix build .#nixosConfigurations.<hostname>.config.hardware.zynq.boot-bin`
@@ -153,5 +289,19 @@ in
         message = "hardware.zynq.pmufw is not optional on ZynqMP.";
       }
     ];
+
+    hardware.zynq.bif.text = lib.mkDefault ''
+      ${cfg.bif.imageName}: {
+      ${lib.concatMapStringsSep "\n" (l: "  ${l}") (map renderBifEntry cfg.bif.entries)}
+      }
+    '';
+
+    hardware.zynq.bif.file = lib.mkDefault (pkgs.writeText "bootgen.bif" cfg.bif.text);
+
+    hardware.zynq.boot-bin = lib.mkDefault (
+      pkgs.runCommand "BOOT.BIN" { nativeBuildInputs = [ pkgs.xilinx-bootgen_nixosxlnx ]; } ''
+        bootgen -image ${cfg.bif.file} -arch ${cfg.platform} -w -o $out
+      ''
+    );
   };
 }

@@ -250,6 +250,42 @@ boot.kernelPatches = [
 
 `lib.kernel.yes`, `lib.kernel.no`, `lib.kernel.module`. Use `lib.mkForce lib.kernel.no` if it conflicts with `nixpkgs/pkgs/os-specific/linux/kernel/common-config.nix`.
 
+## Customizing BOOT.BIN
+
+The BIF passed to `bootgen` is built from `hardware.zynq.bif.entries`: a list of `{ attributes, value }` records.
+The default is the standard FSBL → PMUFW → bitstream → BL31 → dtb → U-Boot chain (Zynq 7000 omits PMUFW and BL31).
+Each record renders as `[attr1, attr2] value`; image-header attributes that don't take a file (e.g. `[auth_params]ppk_select=0;spk_id=0x0`) use the same shape — put the parameter string in `value`.
+
+To append entries without redefining the platform default (e.g. an OP-TEE BL32):
+
+```nix
+{ options, pkgs, ... }:
+{
+  hardware.zynq.bif.entries = options.hardware.zynq.bif.entries.default ++ [
+    {
+      attributes = [
+        "destination_cpu=a53-0"
+        "exception_level=el-1"
+        "trustzone"
+      ];
+      value = "${pkgs.opteeOsZynqMP}/tee.elf";
+    }
+  ];
+}
+```
+
+For encrypted/authenticated boot, redefine the list to include image-header entries (`{ attributes = [ "aeskeyfile" ]; value = ./aes.nky; }`, etc.) and add `encryption=aes` / `authentication=rsa` attributes to the existing components.
+For wholly custom BIFs (multi-image partitions, etc.), override `hardware.zynq.bif.text` directly.
+
+To keep secret AES/RSA keys out of the Nix store, build only the BIF and call `bootgen` manually with the keys as command-line arguments:
+
+```bash
+nix build .#nixosConfigurations.<hostname>.config.hardware.zynq.bif.file
+bootgen -image ./result -arch zynqmp -encrypt efuse -aeskeyfile aes.nky -w -o BOOT.BIN
+```
+
+See the AMD/Xilinx Bootgen User Guide for the full BIF syntax and key-management options.
+
 ## Known issues
 
 ### Applications that requires OpenGL not launching
