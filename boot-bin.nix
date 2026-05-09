@@ -63,7 +63,7 @@ let
         else
           "[${lib.concatStringsSep ", " entry.attributes}] ";
     in
-    "${attrs}${toString entry.value}";
+    "${attrs}${entry.value}";
 in
 
 {
