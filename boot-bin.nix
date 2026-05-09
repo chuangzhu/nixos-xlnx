@@ -47,9 +47,8 @@ let
         example = lib.literalExpression ''"''${pkgs.armTrustedFirmwareZynqMP}/bl31.elf"'';
         description = lib.mdDoc ''
           Path or string emitted after the attribute list. Usually a path
-          to a binary (FSBL, PMUFW, bitstream, ELF, dtb), but can also be
-          a parameter string for header-style attributes such as
-          `[auth_params]ppk_select=0;spk_id=0x0`.
+          to a binary (FSBL, PMUFW, bitstream, ELF, dtb), or a parameter string
+          for attributes such as `[auth_params] ppk_select=0;spk_id=0x0`.
         '';
       };
     };
@@ -233,12 +232,7 @@ in
         '';
         description = lib.mdDoc ''
           Structured list of BIF entries. Each entry renders as
-          `[attr1, attr2] value`. Image-header attributes that don't take
-          a file (e.g. `[auth_params]ppk_select=0;spk_id=0x0`) use the
-          same shape — put the parameter string in `value`.
-
-          To extend without redefining the platform default, use
-          {nix}`options.hardware.zynq.bif.entries.default ++ [ yourEntries ]`.
+          `[attr1, attr2] value`.
         '';
       };
 
@@ -266,7 +260,7 @@ in
 
           ```
           nix build .#nixosConfigurations.<hostname>.config.hardware.zynq.bif.file
-          bootgen -image ./result -arch zynqmp -encrypt efuse -aeskeyfile aes.nky -w -o BOOT.BIN
+          bootgen -image ./result -arch zynqmp -p xczu9eg -encrypt efuse -w -o BOOT.BIN
           ```
         '';
       };
