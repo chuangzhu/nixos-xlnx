@@ -66,7 +66,7 @@ final: prev: {
         });
   };
 
-  xilinx-bootgen_nixosxlnx = prev.xilinx-bootgen.overrideAttrs rec {
+  "xilinx-bootgen_${prev.lib.replaceString "." "_" xlnxVersion}" = prev.xilinx-bootgen.overrideAttrs rec {
     version = "xilinx_v${xlnxVersion}";
     src = prev.fetchFromGitHub {
       owner = "Xilinx";

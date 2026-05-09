@@ -275,6 +275,7 @@ For encrypted/authenticated boot, redefine the list to include secure boot relat
 
 ```bash
 nix build .#nixosConfigurations.<hostname>.config.hardware.zynq.bif.file
+nix shell github:chuangzhu/nixos-xlnx#xlnx2024_1.xilinx-bootgen_2024_1
 bootgen -image ./result -arch zynqmp -p xczu9eg -encrypt efuse -w -o BOOT.BIN
 ```
 

@@ -293,7 +293,7 @@ in
     hardware.zynq.bif.file = lib.mkDefault (pkgs.writeText "bootgen.bif" cfg.bif.text);
 
     hardware.zynq.boot-bin = lib.mkDefault (
-      pkgs.runCommand "BOOT.BIN" { nativeBuildInputs = [ pkgs.xilinx-bootgen_nixosxlnx ]; } ''
+      pkgs.runCommand "BOOT.BIN" { nativeBuildInputs = [ pkgs."xilinx-bootgen_${lib.replaceString "." "_" cfg.xlnxVersion}" ]; } ''
         bootgen -image ${cfg.bif.file} -arch ${cfg.platform} -w -o $out
       ''
     );
