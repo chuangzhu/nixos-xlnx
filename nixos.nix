@@ -14,7 +14,7 @@
         "2024.1"
         "2025.1"
       ];
-      description = lib.mdDoc ''
+      description = ''
         Xilinx Vivado Design Suite version of your hardware design.
       '';
     };

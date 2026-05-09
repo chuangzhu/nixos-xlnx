@@ -36,7 +36,7 @@ let
           "bootloader"
           "destination_cpu=a53-0"
         ];
-        description = lib.mdDoc ''
+        description = ''
           Bracketed attributes for this BIF entry, rendered as
           `[attr1, attr2, ...]` before the value. `null` (the default)
           emits no brackets.
@@ -45,7 +45,7 @@ let
       value = lib.mkOption {
         type = lib.types.either lib.types.str lib.types.path;
         example = lib.literalExpression ''"''${pkgs.armTrustedFirmwareZynqMP}/bl31.elf"'';
-        description = lib.mdDoc ''
+        description = ''
           Path or string emitted after the attribute list. Usually a path
           to a binary (FSBL, PMUFW, bitstream, ELF, dtb), or a parameter string
           for attributes such as `[auth_params] ppk_select=0;spk_id=0x0`.
@@ -73,7 +73,7 @@ in
         "zynq"
         "zynqmp"
       ];
-      description = lib.mdDoc ''
+      description = ''
         Whether you use Zynq 7000 or Zynq UltraScale+ MPSoC.
       '';
     };
@@ -81,7 +81,7 @@ in
     sdtDir = lib.mkOption {
       type = lib.types.path;
       example = lib.literalExpression "./gendt/sdt";
-      description = lib.mdDoc ''
+      description = ''
         Directory to system-device-tree sources.
         Since Vivado v2024.1, it's possible to build FSBL and PMUFW in Nix.
 
@@ -91,7 +91,7 @@ in
     dtDir = lib.mkOption {
       type = lib.types.path;
       example = lib.literalExpression "./gendt/dt";
-      description = lib.mdDoc ''
+      description = ''
         Directory to device-tree sources.
 
         DT files can be generated from XSA using {command}`./gendt.tcl`.
@@ -105,7 +105,7 @@ in
         dtc -@ -I dts -O dtb combined.dts -o $out
       '';
       example = lib.literalExpression "./firmware/system.dtb";
-      description = lib.mdDoc ''
+      description = ''
         Nixos-xlnx uses this for {option}`hardware.deviceTree.dtbSource`.
         Note you can still use {option}`hardware.deviceTree.overlays` to
         update your device tree configurations.
@@ -115,7 +115,7 @@ in
     bitstream = lib.mkOption {
       type = lib.types.path;
       example = lib.literalExpression "./gendt/sdt/vivado_exported.bit";
-      description = lib.mdDoc ''
+      description = ''
         Path to bitstream extracted from XSA.
         If you are using {command}`scripts/gendt.tcl`, it is extracted to the `sdt` directory.
       '';
@@ -126,7 +126,7 @@ in
       default =
         fsblCross."${cfg.platform}-fsbl".override { inherit (cfg) sdtDir; } + "/${cfg.platform}_fsbl.elf";
       example = lib.literalExpression "./firmware/fsbl_a53.elf";
-      description = lib.mdDoc ''
+      description = ''
         Path to First Stage Boot Loader.
       '';
     };
@@ -140,7 +140,7 @@ in
         else
           null;
       example = lib.literalExpression "./firmware/pmufw.elf";
-      description = lib.mdDoc ''
+      description = ''
         Path to Zynq MPSoC Platform Management Unit Firmware.
       '';
     };
@@ -149,7 +149,7 @@ in
       imageName = lib.mkOption {
         type = lib.types.str;
         default = "the_ROM_image";
-        description = lib.mdDoc ''
+        description = ''
           Image name for the BIF (the identifier before the opening brace).
           Rarely needs to be changed.
         '';
@@ -230,7 +230,7 @@ in
             }
           ]
         '';
-        description = lib.mdDoc ''
+        description = ''
           Structured list of BIF entries. Each entry renders as
           `[attr1, attr2] value`.
         '';
@@ -242,7 +242,7 @@ in
           Built from {option}`hardware.zynq.bif.imageName` and
           {option}`hardware.zynq.bif.entries`.
         '';
-        description = lib.mdDoc ''
+        description = ''
           The full BIF text passed to bootgen. Override directly for full
           control (e.g. multi-image partitions).
         '';
@@ -253,7 +253,7 @@ in
         defaultText = lib.literalMD ''
           {option}`hardware.zynq.bif.text` written to a file in the Nix store.
         '';
-        description = lib.mdDoc ''
+        description = ''
           The BIF written out as a file. Useful for invoking `bootgen`
           manually outside the Nix store, e.g. when secret AES/RSA keys
           should not end up world-readable in `/nix/store`:
@@ -269,7 +269,7 @@ in
     boot-bin = lib.mkOption {
       type = lib.types.path;
       defaultText = lib.literalMD "built by bootgen from {option}`hardware.zynq.bif.file`";
-      description = lib.mdDoc ''
+      description = ''
         You can build BOOT.BIN without building the whole system using
         {command}`nix build .#nixosConfigurations.<hostname>.config.hardware.zynq.boot-bin`
       '';
