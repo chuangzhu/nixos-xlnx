@@ -92,6 +92,7 @@ let
         depsBuildBuild = [ buildPackages.stdenv.cc ]; # cpp
         env.LOPPER_DTC_FLAGS = "-@";
         env.XILINX_VITIS = vitisDepsDir;
+        env.NIX_CFLAGS_COMPILE = "-Wno-error=return-mismatch -Wno-error=int-conversion -Wno-error=implicit-function-declaration";
 
         postPatch = ''
           # https://github.com/Xilinx/embeddedsw/issues/373
