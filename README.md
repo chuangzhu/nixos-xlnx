@@ -97,10 +97,7 @@ zstdcat ./result/nixos-sd-image-24.05.20231222.6df37dc-aarch64-linux.img.zst | s
 When you make changes to your configuration, you don't have to rebuild and reflash the SD card image. The rootfs (including kernel, device-tree) can be updated using:
 
 ```bash
-out=$(nix build --no-link --print-out-paths -vL .#nixosConfigurations.zynqmpboard.config.system.build.toplevel)
-nix copy --no-check-sigs --to "ssh://root@zynqmpboard.local" "$out"
-ssh root@zynqmpboard.local nix-env -p /nix/var/nix/profiles/system --set $out
-ssh root@zynqmpboard.local /nix/var/nix/profiles/system/bin/switch-to-configuration switch
+nixos-rebuild switch --flake .#zynqmpboard --target-host root@zynqmpboard.local -vL
 ```
 
 After that, you can update BOOT.BIN using
