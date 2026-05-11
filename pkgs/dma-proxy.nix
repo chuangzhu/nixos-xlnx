@@ -8,15 +8,17 @@
 
 stdenv.mkDerivation rec {
   pname = "dma-proxy";
-  version = "unstable-2023-10-09";
+  version = "unstable-2025-06-25";
 
   src = fetchFromGitHub {
     owner = "Xilinx-Wiki-Projects";
     repo = "software-prototypes";
-    rev = "9bba8fb105ef2150fafd6d7708d259068f597868";
-    hash = "sha256-4fsUdkL7vDW1bTv/r2eUsa9I4E5PIz69HSnsAtCzM1Q=";
+    rev = "aa646c3b7204695880848c3a060e78c9351b4f3c";
+    hash = "sha256-Z31B7556x5LfffcxZDRJCQzFryiR6bTBVZUGEf+dZFI=";
   };
   sourceRoot = "source/linux-user-space-dma/Software/Kernel";
+
+  patches = [ ./dma-proxy.patch ];
 
   postPatch = ''
     cp ../Common/dma-proxy.h .
