@@ -42,9 +42,12 @@ let
 
     dontBuild = true;
 
-    # CMake 4 compatibility
     patchPhase = ''
+      # CMake 4 compatibility
       sed -i 's/cmake_minimum_required *(VERSION .*)/cmake_minimum_required(VERSION 3.15)/' CMakeLists.txt
+      # ATOMIC_VAR_INIT was removed in C23 (the default since GCC 15) and was
+      # never needed in C11; expand it in place like upstream OpenAMP does
+      find lib -name '*.h' -exec sed -i '/#define ATOMIC_VAR_INIT/!s/ATOMIC_VAR_INIT(\([^)]*\))/(\1)/g' {} +
     '';
 
     installPhase = ''

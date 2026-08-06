@@ -53,36 +53,43 @@
 
     # Some modules specified in <nixpkgs/nixos/modules/system/boot/kernel.nix> aren't available...
     boot.initrd.includeDefaultModules = false;
-    boot.initrd.availableKernelModules = [
-      "ahci"
-      "sata_inic162x"
-      "sata_sil24"
-      # NVMe
-      "nvme"
-      # Standard SCSI stuff.
-      "sr_mod"
-      # Support USB keyboards, in case the boot fails and we only have
-      # a USB keyboard, or for LUKS passphrase prompt.
-      "uhci_hcd"
-      "ehci_hcd"
-      "ehci_pci"
-      "ohci_hcd"
-      "ohci_pci"
-      "usbhid"
-      "hid_generic"
-      "hid_lenovo"
-      "hid_apple"
-      "hid_roccat"
-      "hid_logitech_hidpp"
-      "hid_logitech_dj"
-      "hid_microsoft"
-      "hid_cherry"
-    ]
-    ++ lib.optionals (config.hardware.zynq.platform != "zynq") [
-      "xhci_hcd"
-      "xhci_pci"
-      # Broadcom
-      # "vc4"
+    boot.initrd.availableKernelModules = lib.mkMerge [
+      {
+        # The systemd initrd (default since nixos-26.05) wants tpm-crb, but
+        # TCG_CRB depends on ACPI, which xilinx kernels don't have
+        tpm-crb = lib.mkForce false;
+      }
+      ([
+        "ahci"
+        "sata_inic162x"
+        "sata_sil24"
+        # NVMe
+        "nvme"
+        # Standard SCSI stuff.
+        "sr_mod"
+        # Support USB keyboards, in case the boot fails and we only have
+        # a USB keyboard, or for LUKS passphrase prompt.
+        "uhci_hcd"
+        "ehci_hcd"
+        "ehci_pci"
+        "ohci_hcd"
+        "ohci_pci"
+        "usbhid"
+        "hid_generic"
+        "hid_lenovo"
+        "hid_apple"
+        "hid_roccat"
+        "hid_logitech_hidpp"
+        "hid_logitech_dj"
+        "hid_microsoft"
+        "hid_cherry"
+      ]
+      ++ lib.optionals (config.hardware.zynq.platform != "zynq") [
+        "xhci_hcd"
+        "xhci_pci"
+        # Broadcom
+        # "vc4"
+      ])
     ];
   };
 }
