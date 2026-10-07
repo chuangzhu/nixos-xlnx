@@ -6,7 +6,10 @@
 }:
 
 {
-  imports = [ ./boot-bin.nix ];
+  imports = [
+    ./boot-bin.nix
+    ./watchdog.nix
+  ];
 
   options.hardware.zynq = {
     xlnxVersion = lib.mkOption {

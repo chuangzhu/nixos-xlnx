@@ -283,6 +283,28 @@ Then you can set `hardware.zynq.boot-bin = ./BOOT.BIN;`.
 
 See the [AMD/Xilinx Bootgen User Guide](https://docs.amd.com/r/en-US/ug1283-bootgen-user-guide) for the full BIF syntax and key-management options.
 
+### PMUFW build options
+
+`hardware.zynq.pmufwExtraCFlags` passes extra flags to the default PMUFW build, typically `-D` options from `xpfw_config.h`:
+
+```nix
+hardware.zynq.pmufwExtraCFlags = [ "-DENABLE_EM" "-DXPFW_PRINT_VAL=0U" ];
+```
+
+PMUFW must fit in the 128 KiB PMU RAM, so enabling a module may require disabling another.
+
+## Hardware watchdog
+
+On ZynqMP, the FPD system watchdog (SWDT0) can reset the board if Linux hangs:
+
+```nix
+hardware.zynq.watchdog.enable = true;
+```
+
+This enables the `watchdog0` device-tree node, sets `systemd.settings.Manager.RuntimeWatchdogSec = "30s"` and `RebootWatchdogSec = "5min"` (both `mkDefault`), and builds PMUFW with `-DENABLE_EM`. The default PMUFW doesn't re-arm the SWDT system reset after FSBL disarms it, so without that flag a timeout does nothing. To make room in PMU RAM, it also disables PMUFW's FPGA readback and its UART banner.
+
+Since PMUFW is part of BOOT.BIN, run `xlnx-firmware-update` and reboot after enabling it. To test, crash the kernel with `echo c > /proc/sysrq-trigger`; the board should reset after the runtime timeout.
+
 ## Known issues
 
 ### Applications that requires OpenGL not launching

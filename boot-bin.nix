@@ -135,13 +135,30 @@ in
       defaultText = lib.literalMD "generated from {option}`hardware.zynq.sdtDir`";
       default =
         if cfg.platform == "zynqmp" then
-          pkgs.pkgsCross.microblaze-embedded.zynqmp-pmufw.override { inherit (cfg) sdtDir; }
+          pkgs.pkgsCross.microblaze-embedded.zynqmp-pmufw.override {
+            inherit (cfg) sdtDir;
+            extraCFlags = cfg.pmufwExtraCFlags;
+          }
           + "/zynqmp_pmufw.elf"
         else
           null;
       example = lib.literalExpression "./firmware/pmufw.elf";
       description = ''
         Path to Zynq MPSoC Platform Management Unit Firmware.
+      '';
+    };
+    pmufwExtraCFlags = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+      example = [
+        "-DENABLE_EM"
+        "-DXPFW_PRINT_VAL=0U"
+      ];
+      description = ''
+        Extra compiler flags for building the default {option}`hardware.zynq.pmufw`,
+        typically `-D` build options from `xpfw_config.h`.
+        PMUFW must fit in the 128 KiB PMU RAM, so enabling a module may
+        require disabling another.
       '';
     };
 
